@@ -1,767 +1,186 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Belot Club</title>
-
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Belot Club</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      background-color: #0E0E0E;
+      color: #FFD700;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .active {
+      display: flex;
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 1em;
+      text-align: center;
+    }
+    button {
+      background-color: #FFD700;
+      color: #0E0E0E;
+      border: none;
+      padding: 1em 2em;
+      margin: 0.5em;
+      font-size: 1.2em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 10px #FFD700;
+    }
+    input {
+      background-color: #0E0E0E;
+      border: 2px solid #FFD700;
+      color: #FFD700;
+      padding: 0.5em;
+      margin: 0.5em;
+      font-size: 1.2em;
+      border-radius: 6px;
+      text-align: center;
+    }
+  </style>
 </head>
-
 <body>
 
+  <!-- Главное меню -->
+  <div id="menu" class="screen active">
+    <h1>♣ Belot Club ♣</h1>
+    <button onclick="startGame()">Начать игру</button>
+    <button onclick="continueGame()">Продолжить игру</button>
+    <button onclick="showRules()">Правила</button>
+  </div>
 
 
-<!-- ======================================
-     START SCREEN
-====================================== -->
 
-<div id="startScreen" class="start-screen">
+      <!-- Экран выбора режима -->
+  <div id="mode" class="screen">
+    <h1>Выберите режим</h1>
+    <button onclick="setMode(2)">2 игрока</button>
+    <button onclick="setMode(3)">3 игрока</button>
+    <button onclick="setMode(4)">4 игрока</button>
+    <button onclick="goBackToMenu()">Назад</button>
+  </div>
 
-    <div class="start-window">
 
-        <h1 class="start-logo">
 
-            ♠ BELOT CLUB ♣
 
-        </h1>
-
-        <div class="start-title">
-
-            Выберите режим
-
-        </div>
-
-        <div class="mode-list">
-
-            <button
-                id="mode2"
-                class="mode-btn"
-                data-mode="2">
-
-                2 игрока
-
-            </button>
-
-            <button
-                id="mode3"
-                class="mode-btn"
-                data-mode="3">
-
-                3 игрока
-
-            </button>
-
-            <button
-                id="mode4"
-                class="mode-btn"
-                data-mode="4">
-
-                4 игрока
-
-            </button>
-
-        </div>
-
+      <!-- Экран ввода имён -->
+  <div id="players" class="screen">
+    <h1>Введите имена игроков</h1>
+    <div id="playerInputs">
+      <!-- Поля для имён будут добавляться динамически через JS -->
     </div>
-
-</div>
-
-
-
-<!-- ======================================
-     CONTINUE GAME
-====================================== -->
-
-<div
-    id="continueScreen"
-    class="start-screen hidden">
-
-    <div class="start-window">
-
-        <h2 class="start-title">
-
-            Найдена сохраненная партия
-
-        </h2>
-
-        <button
-            id="continueGame"
-            class="mode-btn">
-
-            Продолжить игру
-
-        </button>
-
-        <button
-            id="newGame"
-            class="mode-btn">
-
-            Новая игра
-
-        </button>
-
-    </div>
-
-</div>
-    
-
-<!-- ======================================
-     PLAYER REGISTRATION
-====================================== -->
-
-<div
-    id="registerScreen"
-    class="start-screen hidden">
-
-    <div class="start-window">
-
-        <h2 class="start-title">
-
-            Регистрация игроков
-
-        </h2>
-
-        <div
-            id="playersForm"
-            class="players-form">
-
-            <input
-                id="player1"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №1">
-
-            <input
-                id="player2"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №2">
-
-            <input
-                id="player3"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №3">
-
-            <input
-                id="player4"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №4">
-
-        </div>
-
-        <button
-            id="startGameBtn"
-            class="mode-btn">
-
-            Начать игру
-
-        </button>
-
-    </div>
-
-</div>
-
-<!-- ======================================
-     LOADING
-====================================== -->
-
-<div
-    id="loadingScreen"
-    class="start-screen hidden">
-
-    <div class="start-window">
-
-        <h2 class="start-title">
-
-            Подготовка игры...
-
-        </h2>
-
-        <div class="loading-bar">
-
-            <div
-                id="loadingProgress"
-                class="loading-progress">
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<!-- ======================================
-     SAVE INFO
-====================================== -->
-
-<div
-    id="saveInfoScreen"
-    class="start-screen hidden">
-
-    <div class="start-window">
-
-        <div
-            id="saveInfoText"
-            class="save-info">
-
-            Найдена сохранённая партия
-
-        </div>
-
-        <button
-            id="continueBtn"
-            class="mode-btn">
-
-            Продолжить игру
-
-        </button>
-
-        <button
-            id="restartBtn"
-            class="mode-btn">
-
-            Новая игра
-
-        </button>
-
-    </div>
-
-</div>
-
+    <button onclick="addNewName()">Добавить новое имя</button>
+    <button onclick="confirmPlayers()">Продолжить</button>
+    <button onclick="goBackToMode()">Назад</button>
+  </div>
 
 
     
 
-<!-- ======================================
-     MAIN GAME
-====================================== -->
 
-<div
-    id="gameScreen"
-    class="app hidden">
-
+      <!-- Игровой экран -->
+  <div id="game" class="screen">
+    <h1>Игровое пространство</h1>
     
-
-<div class="app">
-
-    <!-- ======================================
-         HEADER
-    ======================================= -->
-
-    <header class="topbar">
-
-        <button
-            id="menuBtn"
-            class="icon-btn">
-
-            ☰
-
-        </button>
-
-        <h1 class="logo">
-
-            ♠ BELOT CLUB ♣
-
-        </h1>
-
-        <button
-            id="rulesBtn"
-            class="icon-btn">
-
-            📖
-
-        </button>
-
-    </header>
-
-
-
-    <!-- ======================================
-         INFO BAR
-    ======================================= -->
-
-    <section class="info-bar">
-
-        <div
-            id="dealCounter"
-            class="deal-counter">
-
-            №1
-
-        </div>
-
-        <div
-            id="gameTimer"
-            class="timer">
-
-            00:00:00
-
-        </div>
-
-        <div class="info-right">
-
-            &nbsp;
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================
-         SCORE PANEL (CLICK = HISTORY)
-    ======================================= -->
-
-    <section
-        id="scorePanel"
-        class="score-panel">
-
-        <div class="teams">
-
-            <!-- TEAM 1 -->
-
-            <div class="team">
-
-                <div class="team-title">
-
-                    Команда 1
-
-                </div>
-
-                <div
-                    id="team1Players"
-                    class="team-players">
-
-                    <div>Игрок 1</div>
-
-                    <div>Игрок 2</div>
-
-                </div>
-
-                <div class="team-footer">
-
-                    <div
-                        id="team1Score"
-                        class="team-score">
-
-                        0
-
-                    </div>
-
-                    <div
-                        id="team1Bolts"
-                        class="team-bolts">
-
-                        ⚡0
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- TEAM 2 -->
-
-            <div class="team">
-
-                <div class="team-title">
-
-                    Команда 2
-
-                </div>
-
-                <div
-                    id="team2Players"
-                    class="team-players">
-
-                    <div>Игрок 3</div>
-
-                    <div>Игрок 4</div>
-
-                </div>
-
-                <div class="team-footer">
-
-                    <div
-                        id="team2Bolts"
-                        class="team-bolts">
-
-                        ⚡0
-
-                    </div>
-
-                    <div
-                        id="team2Score"
-                        class="team-score">
-
-                        0
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- ======================================
-         CURRENT DEAL
-    ======================================= -->
-
-    <main class="game-panel">
-
-        <!-- Dealer -->
-
-        <div class="row">
-
-            <div class="row-label">
-
-                🃏 Сдает
-
-            </div>
-
-            <div
-                id="dealerName"
-                class="row-value">
-
-                Виталий
-
-            </div>
-
-        </div>
-
-
-
-        <!-- Current player -->
-
-        <div class="row">
-
-            <div class="row-label">
-
-                🂠 Играет
-
-            </div>
-
-            <select
-                id="currentPlayer"
-                class="select">
-
-                <!-- Заполняется автоматически -->
-            </select>
-
-        </div>
-
-
-
-        <!-- Game value -->
-
-        <div class="game-cost">
-
-            <div
-                id="gameCost"
-                class="cost-badge">
-
-                🟠 16
-
-            </div>
-
-            <button
-                id="declareBtn"
-                class="declare-btn">
-
-                📢 (0)
-
-            </button>
-
-        </div>
-
-
-
-        <!-- Opponents -->
-
-        <div class="row">
-
-            <label
-                class="row-label"
-                for="enemyPoints">
-
-                Очки соперника
-
-            </label>
-
-            <input
-                id="enemyPoints"
-                type="number"
-                min="0"
-                step="1"
-                inputmode="numeric"
-                placeholder="0">
-
-        </div>
-
-
-
-        <!-- Player -->
-
-        <div class="row">
-
-            <label
-                class="row-label"
-                for="playerPoints">
-
-                🂠 Играющему
-
-            </label>
-
-            <input
-                id="playerPoints"
-                type="number"
-                min="0"
-                step="1"
-                inputmode="numeric"
-                placeholder="0">
-
-        </div>
-
-
-
-        <!-- Save -->
-
-        <div class="save-section">
-
-            <button
-                id="saveBtn"
-                class="save-btn">
-
-                💾 Сохранить
-
-            </button>
-
-        </div>
-
-    </main>
-
-    <!-- ======================================
-         DECLARATIONS MODAL
-    ======================================= -->
-
-    <div
-        id="declareModal"
-        class="modal hidden">
-
-        <div class="modal-window">
-
-            <div class="modal-header">
-
-                <h2>📢 Объявы</h2>
-
-                <button
-                    id="closeDeclare"
-                    class="close-btn">
-
-                    ✕
-
-                </button>
-
-            </div>
-
-            <div
-                id="declareList"
-                class="declare-content">
-
-                <!-- Заполняется JavaScript -->
-
-            </div>
-
-            <button
-                id="saveDeclare"
-                class="modal-save">
-
-                ✔ Применить
-
-            </button>
-
-        </div>
-
+    <!-- Верхняя панель -->
+    <div style="display:flex; justify-content:space-between; width:90%;">
+      <button onclick="goHome()">Домой</button>
+      <div id="roundInfo">
+        <span id="roundNumber">Раздача: 1</span> |
+        <span id="timer" onclick="toggleTimer()">⏱ 00:00</span>
+      </div>
+      <button onclick="showRules()">Правила</button>
     </div>
 
-
-
-    <!-- ======================================
-         CONFIRM MODAL
-    ======================================= -->
-
-    <div
-        id="confirmModal"
-        class="modal hidden">
-
-        <div class="modal-window">
-
-            <div class="modal-header">
-
-                <h2>Проверка</h2>
-
-            </div>
-
-            <div
-                id="confirmContent"
-                class="confirm-body">
-
-                <!-- JavaScript формирует сообщение -->
-
-            </div>
-
-            <div class="modal-buttons">
-
-                <button
-                    id="cancelSave"
-                    class="secondary-btn">
-
-                    ← Отмена
-
-                </button>
-
-                <button
-                    id="confirmSave"
-                    class="primary-btn">
-
-                    ✔ Подтвердить
-
-                </button>
-
-            </div>
-
-        </div>
-
+    <!-- Блок команд -->
+    <div id="teamsBlock" style="margin-top:1em; padding:1em; border:2px solid #FFD700; border-radius:8px; width:90%; text-align:center;" onclick="showHistory()">
+      <div>
+        <strong>Команда 1:</strong> <span id="team1Score">0</span> очков ⚡ <span id="team1Bolts">0</span>
+      </div>
+      <div>
+        <strong>Команда 2:</strong> <span id="team2Score">0</span> очков ⚡ <span id="team2Bolts">0</span>
+      </div>
     </div>
 
-
-
-    <!-- ======================================
-         RULES MODAL
-    ======================================= -->
-
-    <div
-        id="rulesModal"
-        class="modal hidden">
-
-        <div class="modal-window modal-large">
-
-            <div class="modal-header">
-
-                <h2>📖 Правила</h2>
-
-                <button
-                    id="closeRules"
-                    class="close-btn">
-
-                    ✕
-
-                </button>
-
-            </div>
-
-            <div
-                id="rulesContent"
-                class="rules-content">
-
-                <!-- Правила будут добавлены позже -->
-
-            </div>
-
-        </div>
-
+    <!-- Ввод очков -->
+    <div style="margin-top:1em;">
+      <label>Очки играющему:</label>
+      <input id="playerScore" type="number" min="0" step="1" oninput="autoFillOpponent()">
+      <label>Очки сопернику:</label>
+      <input id="opponentScore" type="number" min="0" step="1">
     </div>
 
+    <button onclick="validateScores()">Сохранить</button>
+  </div>
+
+  <!-- Экран подтверждения -->
+  <div id="confirmation" class="screen">
+    <h1>Подтверждение</h1>
+    <p id="confirmationText"></p>
+    <button onclick="goBackToGame()">Вернуться</button>
+    <button onclick="saveToHistory()">Сохранить в историю и новая раздача</button>
+  </div>
 
 
 
 
+      <!-- Экран истории -->
+  <div id="history" class="screen">
+    <h1>История раздач</h1>
+    <table style="border:2px solid #FFD700; border-collapse:collapse; width:90%; text-align:center;">
+      <thead>
+        <tr>
+          <th>Раздача</th>
+          <th>Команда 1</th>
+          <th>Команда 2</th>
+          <th>Болты</th>
+          <th>Событие</th>
+          <th>Время</th>
+        </tr>
+      </thead>
+      <tbody id="historyTable">
+        <!-- Записи будут добавляться через JS -->
+      </tbody>
+    </table>
+    <p id="totalTime">Суммарное время игры: 00:00</p>
+    <button onclick="closeHistory()">Закрыть</button>
+  </div>
 
-        <!-- ======================================
-         HISTORY MODAL
-    ======================================= -->
-
-    <div
-        id="historyModal"
-        class="modal hidden">
-
-        <div class="modal-window modal-large">
-
-            <div class="modal-header">
-
-                <h2>История партии</h2>
-
-                <button
-                    id="closeHistory"
-                    class="close-btn">
-
-                    ✕
-
-                </button>
-
-            </div>
-
-            <div
-                id="historyContent"
-                class="history-content">
-
-                <!-- История сдач -->
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- ======================================
-         TOAST
-    ======================================= -->
-
-    <div
-        id="toast"
-        class="toast hidden">
-
-        ✔ Сохранено
-
-    </div>
-
-</div>
-
-<!-- Конец gameScreen -->
-
-<!-- ======================================
-     SCRIPT
-====================================== -->
-
-<script src="script.js"></script>
+  <!-- Экран победы -->
+  <div id="victory" class="screen">
+    <h1>🏆 Победа!</h1>
+    <div style="font-size:4em; margin:1em;">🥇</div>
+    <p id="victoryText">Команда 1 набрала 101 очко!</p>
+    <div id="celebration" style="font-size:2em;">🎆 🎉 🎇</div>
+    <p id="finalStats"></p>
+    <button onclick="newGame()">Начать новую игру</button>
+  </div>
 
 </body>
 </html>
 
-    
 
 
-    
+
 
 
     

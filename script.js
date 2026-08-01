@@ -102,7 +102,157 @@ function checkSavedGame(){
 
 }
 
+/* ==========================================================
+   SAVE NORMAL DEAL
+========================================================== */
 
+function saveDeal(){
+
+    const enemy = Number(enemyPoints.value);
+
+    const player = Number(playerPoints.value);
+
+    const playerTeam = getCurrentTeam();
+
+    const enemyTeam = playerTeam === 0 ? 1 : 0;
+
+    addTeamScore(playerTeam,player);
+
+    addTeamScore(enemyTeam,enemy);
+
+
+
+    /* ----- Нет взяток ----- */
+
+    if(enemy === 0 || player === 0){
+
+        showConfirm(
+
+            "У одной из сторон нет взяток.<br><br>Добавить победителям +10 ?",
+
+            ()=>{
+
+                if(enemy === 0){
+
+                    addTeamScore(playerTeam,10);
+
+                }
+
+                else{
+
+                    addTeamScore(enemyTeam,10);
+
+                }
+
+                addHistory(
+
+                    `${App.players[App.currentPlayer].name}
+
+🟠 ${App.gameValue}
+
+${enemy}:${player}`
+
+                );
+
+                saveGame();
+
+                checkGameEnd();
+
+                finishDeal();
+
+            }
+
+        );
+
+        return;
+
+    }
+
+
+
+    addHistory(
+
+        `${App.players[App.currentPlayer].name}
+
+🟠 ${App.gameValue}
+
+${enemy}:${player}`
+
+    );
+
+
+
+    saveGame();
+
+    checkGameEnd();
+
+    finishDeal();
+
+}
+
+
+
+/* ==========================================================
+   SAVE BOLT
+========================================================== */
+
+function saveBolt(){
+
+    const playerTeam = getCurrentTeam();
+
+    const enemyTeam = playerTeam === 0 ? 1 : 0;
+
+    addBolt(playerTeam);
+
+    addTeamScore(enemyTeam,App.gameValue);
+
+    addHistory(
+
+        `⚡ Болт
+
+${App.players[App.currentPlayer].name}
+
++${App.gameValue} соперникам`
+
+    );
+
+    saveGame();
+
+    checkGameEnd();
+
+    finishDeal();
+
+}
+
+
+
+/* ==========================================================
+   WRONG DEAL
+========================================================== */
+
+function saveWrongDeal(){
+
+    const dealerTeam = getDealerTeam();
+
+    App.teams[dealerTeam].score -= 10;
+
+    renderTeams();
+
+    addHistory(
+
+        `❌ Неправильная раздача
+
+${App.players[App.dealerIndex].name}
+
+−10`
+
+    );
+
+    saveGame();
+
+    finishDeal();
+
+}
 /* ==========================================================
    CONTINUE / NEW GAME
 ========================================================== */
@@ -1379,7 +1529,7 @@ function saveDeal(){
 
     );
 
-    clearDeal();
+    finishDeal();
 
 }
 
@@ -1402,7 +1552,7 @@ function saveBolt(){
 
     );
 
-    clearDeal();
+    finishDeal();
 
 }
 
@@ -1429,7 +1579,7 @@ function saveWrongDeal(){
 
     );
 
-    clearDeal();
+    finishDeal();
 
 }
 

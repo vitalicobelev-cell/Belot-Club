@@ -30,7 +30,7 @@
 
 
 
-      <!-- Экран ввода имён -->
+    <!-- Экран ввода имён -->
 <div id="players" class="screen">
   <h1>Введите имена игроков</h1>
 
@@ -42,80 +42,6 @@
   <button onclick="goBackToMode()">Назад</button>
 </div>
 
-<script>
-  // Список сохранённых имён
-  let savedNames = JSON.parse(localStorage.getItem("belotNames") || "[]");
-
-  // Генерация полей для выбора игроков
-  function generatePlayerInputs(count) {
-    const container = document.getElementById("playerInputs");
-    container.innerHTML = "";
-
-    for (let i = 1; i <= count; i++) {
-      const wrapper = document.createElement("div");
-      wrapper.style.margin = "0.5em";
-
-      const label = document.createElement("label");
-      label.innerText = "Игрок " + i + ": ";
-      label.style.marginRight = "0.5em";
-
-      const select = document.createElement("select");
-      select.id = "player" + i;
-      select.style.padding = "0.5em";
-      select.style.border = "2px solid #FFD700";
-      select.style.backgroundColor = "#1A1F2E";
-      select.style.color = "#FFD700";
-      select.style.borderRadius = "6px";
-
-      // Добавляем сохранённые имена
-      savedNames.forEach(name => {
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        select.appendChild(option);
-      });
-
-      // Кнопка "Добавить нового"
-      const addOption = document.createElement("option");
-      addOption.value = "add";
-      addOption.textContent = "➕ Добавить нового";
-      select.appendChild(addOption);
-
-      // Обработка добавления нового имени
-      select.addEventListener("change", e => {
-        if (e.target.value === "add") {
-          const newName = prompt("Введите новое имя:");
-          if (newName && !savedNames.includes(newName)) {
-            savedNames.push(newName);
-            localStorage.setItem("belotNames", JSON.stringify(savedNames));
-            generatePlayerInputs(count); // перерисовать список
-          } else if (savedNames.includes(newName)) {
-            alert("Такое имя уже есть.");
-          }
-        }
-      });
-
-      wrapper.appendChild(label);
-      wrapper.appendChild(select);
-      container.appendChild(wrapper);
-    }
-  }
-
-  // Подтверждение выбранных игроков
-  function confirmPlayers() {
-    players = [];
-    for (let i = 1; i <= currentMode; i++) {
-      const name = document.getElementById("player" + i).value;
-      if (!name || name === "add") {
-        alert("Выберите имя для игрока " + i);
-        return;
-      }
-      players.push(name);
-    }
-    startNewGame();
-    showScreen("game");
-  }
-</script>
 
 
 

@@ -2,193 +2,79 @@
 <html lang="ru">
 
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          content="width=device-width, initial-scale=1.0">
 
     <title>Belot Club</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <div class="app">
 
-    <!-- ==========================
+    <!-- ======================================
          HEADER
-    =========================== -->
+    ======================================= -->
 
     <header class="topbar">
 
-        <button id="menuBtn" class="icon-btn">
+        <button
+            id="menuBtn"
+            class="icon-btn">
+
             ☰
+
         </button>
 
         <h1 class="logo">
+
             ♠ BELOT CLUB ♣
+
         </h1>
 
-        <button id="rulesBtn" class="icon-btn">
+        <button
+            id="rulesBtn"
+            class="icon-btn">
+
             📖
+
         </button>
 
     </header>
 
 
 
-    <!-- ==========================
-         TIMER
-    =========================== -->
+    <!-- ======================================
+         INFO BAR
+    ======================================= -->
 
-    <section class="timer">
+    <section class="info-bar">
 
-        <span id="gameTimer">
-            ⏱ 00:00:00
-        </span>
+        <div
+            id="dealCounter"
+            class="deal-counter">
 
-    </section>
-
-
-
-    <!-- ==========================
-         HISTORY BUTTON
-    =========================== -->
-
-    <section class="history">
-
-        <button id="historyBtn" class="history-btn">
-
-            <span>
-                📜 История
-            </span>
-
-            <span>
-                ❯
-            </span>
-
-        </button>
-
-    </section>
-
-
-
-    <!-- ==========================
-         TEAMS
-    =========================== -->
-
-    <section class="teams">
-
-        <!-- TEAM 1 -->
-
-        <article class="team" id="team1">
-
-            <div class="team-title">
-
-                Команда 1
-
-            </div>
-
-            <div class="team-players">
-
-                <div id="team1Player1">
-                    Виталий
-                </div>
-
-                <div id="team1Player2">
-                    Сережа
-                </div>
-
-            </div>
-
-            <div class="team-footer">
-
-                <div
-                    class="team-score"
-                    id="team1Score">
-
-                    0
-
-                </div>
-
-                <div
-                    class="team-bolts"
-                    id="team1Bolts">
-
-                    ⚡⚡
-
-                </div>
-
-            </div>
-
-        </article>
-
-
-
-        <!-- TEAM 2 -->
-
-        <article class="team" id="team2">
-
-            <div class="team-title">
-
-                Команда 2
-
-            </div>
-
-            <div class="team-players">
-
-                <div id="team2Player1">
-                    Анастасия
-                </div>
-
-                <div id="team2Player2">
-                    Алина
-                </div>
-
-            </div>
-
-            <div class="team-footer">
-
-                <div
-                    class="team-score"
-                    id="team2Score">
-
-                    0
-
-                </div>
-
-                <div
-                    class="team-bolts"
-                    id="team2Bolts">
-
-                    ⚡
-
-                </div>
-
-            </div>
-
-        </article>
-
-    </section>
-
-
-    <!-- ==========================
-         DEALER
-    =========================== -->
-
-    <section class="row">
-
-        <div class="row-label">
-
-           🃏 Сдает
+            №1
 
         </div>
 
         <div
-            id="dealerName"
-            class="row-value">
+            id="gameTimer"
+            class="timer">
 
-            Виталий
+            00:00:00
+
+        </div>
+
+        <div class="info-right">
+
+            &nbsp;
 
         </div>
 
@@ -196,38 +82,157 @@
 
 
 
-    <!-- ==========================
-         CURRENT PLAYER
-    =========================== -->
+    <!-- ======================================
+         SCORE PANEL (CLICK = HISTORY)
+    ======================================= -->
 
-    <section class="row">
+    <section
+        id="scorePanel"
+        class="score-panel">
 
-        <label
-            class="row-label"
-            for="currentPlayer">
+        <div class="teams">
 
-            🂠 Играет
+            <!-- TEAM 1 -->
 
-        </label>
+            <div class="team">
+
+                <div class="team-title">
+
+                    Команда 1
+
+                </div>
+
+                <div
+                    id="team1Players"
+                    class="team-players">
+
+                    <div>Игрок 1</div>
+
+                    <div>Игрок 2</div>
+
+                </div>
+
+                <div class="team-footer">
+
+                    <div
+                        id="team1Score"
+                        class="team-score">
+
+                        0
+
+                    </div>
+
+                    <div
+                        id="team1Bolts"
+                        class="team-bolts">
+
+                        ⚡0
+
+                    </div>
+
+                </div>
+
+            </div>
 
 
-        <select id="currentPlayer" class="select">
-    <option>Виталий</option>
-    <option>Сергей</option>
-    <option>Анастасия</option>
-    <option>Алина</option>
-</select>
-        
+
+            <!-- TEAM 2 -->
+
+            <div class="team">
+
+                <div class="team-title">
+
+                    Команда 2
+
+                </div>
+
+                <div
+                    id="team2Players"
+                    class="team-players">
+
+                    <div>Игрок 3</div>
+
+                    <div>Игрок 4</div>
+
+                </div>
+
+                <div class="team-footer">
+
+                    <div
+                        id="team2Bolts"
+                        class="team-bolts">
+
+                        ⚡0
+
+                    </div>
+
+                    <div
+                        id="team2Score"
+                        class="team-score">
+
+                        0
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </section>
 
 
+    <!-- ======================================
+         CURRENT DEAL
+    ======================================= -->
 
-    <!-- ==========================
-         GAME COST
-    =========================== -->
+    <main class="game-panel">
 
-    <section class="row">
+        <!-- Dealer -->
+
+        <div class="row">
+
+            <div class="row-label">
+
+                🃏 Сдает
+
+            </div>
+
+            <div
+                id="dealerName"
+                class="row-value">
+
+                Виталий
+
+            </div>
+
+        </div>
+
+
+
+        <!-- Current player -->
+
+        <div class="row">
+
+            <div class="row-label">
+
+                🂠 Играет
+
+            </div>
+
+            <select
+                id="currentPlayer"
+                class="select">
+
+                <!-- Заполняется автоматически -->
+            </select>
+
+        </div>
+
+
+
+        <!-- Game value -->
 
         <div class="game-cost">
 
@@ -240,7 +245,7 @@
             </div>
 
             <button
-                id="declarationsBtn"
+                id="declareBtn"
                 class="declare-btn">
 
                 📢 (0)
@@ -249,155 +254,75 @@
 
         </div>
 
-    </section>
 
 
+        <!-- Opponents -->
 
-    <!-- ==========================
-         ENEMY SCORE
-    =========================== -->
+        <div class="row">
 
-    <section class="row">
+            <label
+                class="row-label"
+                for="enemyPoints">
 
-        <label
-            class="row-label"
-            for="enemyScore">
+                Очки соперника
 
-            Очки соперника
+            </label>
 
-        </label>
-
-        <input
-            id="enemyScore"
-            type="number"
-            inputmode="numeric"
-            min="0"
-            max="162"
-            placeholder="0">
-
-    </section>
-
-
-
-    <!-- ==========================
-         PLAYER SCORE
-    =========================== -->
-
-    <section class="row">
-
-        <label
-            class="row-label"
-            for="playerScore">
-
-            🂠 Играющему
-
-        </label>
-
-        <input
-            id="playerScore"
-            type="number"
-            inputmode="numeric"
-            min="0"
-            max="162"
-            placeholder="0">
-
-    </section>
-
-    <!-- ==========================
-         GAME EVENTS
-    =========================== -->
-
-    <section class="events">
-
-        <button
-            id="boltBtn"
-            class="event-btn">
-
-            ⚡ Болт
-
-        </button>
-
-        <button
-            id="wrongDealBtn"
-            class="event-btn">
-
-            ❌ Раздача
-
-        </button>
-
-        <button
-            id="noTrickBtn"
-            class="event-btn">
-
-            🚫 Нет взятки
-
-        </button>
-
-    </section>
-
-
-
-    <!-- ==========================
-         SAVE
-    =========================== -->
-
-    <section class="save-section">
-
-        <button
-            id="saveBtn"
-            class="save-btn">
-
-            💾 СОХРАНИТЬ СДАЧУ
-
-        </button>
-
-    </section>
-
-
-
-    <!-- ==========================
-         HISTORY MODAL
-    =========================== -->
-
-    <div
-        id="historyModal"
-        class="modal hidden">
-
-        <div class="modal-window">
-
-            <div class="modal-header">
-
-                <h2>
-                    📜 История партии
-                </h2>
-
-                <button
-                    id="closeHistoryBtn"
-                    class="close-btn">
-
-                    ✕
-
-                </button>
-
-            </div>
-
-            <div
-                id="historyTable"
-                class="history-table">
-
-                <!-- История сдач -->
-
-            </div>
+            <input
+                id="enemyPoints"
+                type="number"
+                min="0"
+                step="1"
+                inputmode="numeric"
+                placeholder="0">
 
         </div>
 
-    </div>
+
+
+        <!-- Player -->
+
+        <div class="row">
+
+            <label
+                class="row-label"
+                for="playerPoints">
+
+                🂠 Играющему
+
+            </label>
+
+            <input
+                id="playerPoints"
+                type="number"
+                min="0"
+                step="1"
+                inputmode="numeric"
+                placeholder="0">
+
+        </div>
 
 
 
-    <!-- ==========================
+        <!-- Save -->
+
+        <div class="save-section">
+
+            <button
+                id="saveBtn"
+                class="save-btn">
+
+                💾 Сохранить
+
+            </button>
+
+        </div>
+
+    </main>
+
+    <!-- ======================================
          DECLARATIONS MODAL
-    =========================== -->
+    ======================================= -->
 
     <div
         id="declareModal"
@@ -407,12 +332,10 @@
 
             <div class="modal-header">
 
-                <h2>
-                    📢 Объявления
-                </h2>
+                <h2>📢 Объявы</h2>
 
                 <button
-                    id="closeDeclareBtn"
+                    id="closeDeclare"
                     class="close-btn">
 
                     ✕
@@ -422,18 +345,18 @@
             </div>
 
             <div
-                id="declareContent"
+                id="declareList"
                 class="declare-content">
 
-                <!-- Здесь будут объявления -->
+                <!-- Заполняется JavaScript -->
 
             </div>
 
             <button
-                id="saveDeclarationsBtn"
+                id="saveDeclare"
                 class="modal-save">
 
-                ✔ Сохранить
+                ✔ Применить
 
             </button>
 
@@ -441,10 +364,11 @@
 
     </div>
 
-    
-    <!-- ==========================
-         SAVE CONFIRM MODAL
-    =========================== -->
+
+
+    <!-- ======================================
+         CONFIRM MODAL
+    ======================================= -->
 
     <div
         id="confirmModal"
@@ -454,81 +378,33 @@
 
             <div class="modal-header">
 
-                <h2>
-                    Проверка сдачи
-                </h2>
+                <h2>Проверка</h2>
 
             </div>
 
-            <div class="confirm-body">
+            <div
+                id="confirmContent"
+                class="confirm-body">
 
-                <div class="confirm-row">
-
-                    <span>Играет</span>
-
-                    <strong id="confirmPlayer">
-                        —
-                    </strong>
-
-                </div>
-
-                <div class="confirm-row">
-
-                    <span>Стоимость</span>
-
-                    <strong id="confirmCost">
-                        🪙 16
-                    </strong>
-
-                </div>
-
-                <div class="confirm-row">
-
-                    <span>Объявления</span>
-
-                    <strong id="confirmDeclarations">
-                        📢 (0)
-                    </strong>
-
-                </div>
-
-                <div class="confirm-row">
-
-                    <span>Очки соперника</span>
-
-                    <strong id="confirmEnemyScore">
-                        0
-                    </strong>
-
-                </div>
-
-                <div class="confirm-row">
-
-                    <span>Играющему</span>
-
-                    <strong id="confirmPlayerScore">
-                        0
-                    </strong>
-
-                </div>
+                <!-- JavaScript формирует сообщение -->
 
             </div>
 
             <div class="modal-buttons">
 
                 <button
-                    id="editGameBtn"
+                    id="cancelSave"
                     class="secondary-btn">
 
-                    ← Изменить
+                    ← Отмена
 
                 </button>
 
                 <button
-                    id="confirmSaveBtn"
+                    id="confirmSave"
                     class="primary-btn">
 
-                    ✔ Сохранить
+                    ✔ Подтвердить
 
                 </button>
 
@@ -540,9 +416,9 @@
 
 
 
-    <!-- ==========================
+    <!-- ======================================
          RULES MODAL
-    =========================== -->
+    ======================================= -->
 
     <div
         id="rulesModal"
@@ -552,12 +428,10 @@
 
             <div class="modal-header">
 
-                <h2>
-                    📖 Правила
-                </h2>
+                <h2>📖 Правила</h2>
 
                 <button
-                    id="closeRulesBtn"
+                    id="closeRules"
                     class="close-btn">
 
                     ✕
@@ -570,38 +444,86 @@
                 id="rulesContent"
                 class="rules-content">
 
+                <!-- Правила будут добавлены позже -->
+
             </div>
 
         </div>
 
     </div>
 
-    
-    <!-- ==========================
+
+
+
+
+
+        <!-- ======================================
+         HISTORY MODAL
+    ======================================= -->
+
+    <div
+        id="historyModal"
+        class="modal hidden">
+
+        <div class="modal-window modal-large">
+
+            <div class="modal-header">
+
+                <h2>История партии</h2>
+
+                <button
+                    id="closeHistory"
+                    class="close-btn">
+
+                    ✕
+
+                </button>
+
+            </div>
+
+            <div
+                id="historyContent"
+                class="history-content">
+
+                <!-- История сдач -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ======================================
          TOAST
-    =========================== -->
+    ======================================= -->
 
     <div
         id="toast"
         class="toast hidden">
 
-        ✅ Сохранено
+        ✔ Сохранено
 
     </div>
 
 </div>
-<!-- END APP -->
 
 
 
-<!-- ==========================
-     SCRIPTS
-========================== -->
+<!-- ======================================
+     SCRIPT
+====================================== -->
 
-<script src="js/script.js"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
+
     
+
+
+    
+
 
     

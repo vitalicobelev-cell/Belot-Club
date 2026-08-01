@@ -16,6 +16,244 @@
 
 <body>
 
+
+
+<!-- ======================================
+     START SCREEN
+====================================== -->
+
+<div id="startScreen" class="start-screen">
+
+    <div class="start-window">
+
+        <h1 class="start-logo">
+
+            ♠ BELOT CLUB ♣
+
+        </h1>
+
+        <div class="start-title">
+
+            Выберите режим
+
+        </div>
+
+        <div class="mode-list">
+
+            <button
+                id="mode2"
+                class="mode-btn"
+                data-mode="2">
+
+                2 игрока
+
+            </button>
+
+            <button
+                id="mode3"
+                class="mode-btn"
+                data-mode="3">
+
+                3 игрока
+
+            </button>
+
+            <button
+                id="mode4"
+                class="mode-btn"
+                data-mode="4">
+
+                4 игрока
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================
+     CONTINUE GAME
+====================================== -->
+
+<div
+    id="continueScreen"
+    class="start-screen hidden">
+
+    <div class="start-window">
+
+        <h2 class="start-title">
+
+            Найдена сохраненная партия
+
+        </h2>
+
+        <button
+            id="continueGame"
+            class="mode-btn">
+
+            Продолжить игру
+
+        </button>
+
+        <button
+            id="newGame"
+            class="mode-btn">
+
+            Новая игра
+
+        </button>
+
+    </div>
+
+</div>
+    
+
+<!-- ======================================
+     PLAYER REGISTRATION
+====================================== -->
+
+<div
+    id="registerScreen"
+    class="start-screen hidden">
+
+    <div class="start-window">
+
+        <h2 class="start-title">
+
+            Регистрация игроков
+
+        </h2>
+
+        <div
+            id="playersForm"
+            class="players-form">
+
+            <input
+                id="player1"
+                type="text"
+                maxlength="20"
+                placeholder="Игрок №1">
+
+            <input
+                id="player2"
+                type="text"
+                maxlength="20"
+                placeholder="Игрок №2">
+
+            <input
+                id="player3"
+                type="text"
+                maxlength="20"
+                placeholder="Игрок №3">
+
+            <input
+                id="player4"
+                type="text"
+                maxlength="20"
+                placeholder="Игрок №4">
+
+        </div>
+
+        <button
+            id="startGameBtn"
+            class="mode-btn">
+
+            Начать игру
+
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ======================================
+     LOADING
+====================================== -->
+
+<div
+    id="loadingScreen"
+    class="start-screen hidden">
+
+    <div class="start-window">
+
+        <h2 class="start-title">
+
+            Подготовка игры...
+
+        </h2>
+
+        <div class="loading-bar">
+
+            <div
+                id="loadingProgress"
+                class="loading-progress">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- ======================================
+     SAVE INFO
+====================================== -->
+
+<div
+    id="saveInfoScreen"
+    class="start-screen hidden">
+
+    <div class="start-window">
+
+        <div
+            id="saveInfoText"
+            class="save-info">
+
+            Найдена сохранённая партия
+
+        </div>
+
+        <button
+            id="continueBtn"
+            class="mode-btn">
+
+            Продолжить игру
+
+        </button>
+
+        <button
+            id="restartBtn"
+            class="mode-btn">
+
+            Новая игра
+
+        </button>
+
+    </div>
+
+</div>
+
+
+
+    
+
+<!-- ======================================
+     MAIN GAME
+====================================== -->
+
+<div
+    id="gameScreen"
+    class="app hidden">
+
+    
+
 <div class="app">
 
     <!-- ======================================
@@ -509,7 +747,7 @@
 
 </div>
 
-
+<!-- Конец gameScreen -->
 
 <!-- ======================================
      SCRIPT

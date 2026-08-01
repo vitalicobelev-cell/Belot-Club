@@ -5,6 +5,638 @@
 
 "use strict";
 
+
+/* ==========================================================
+   SCREENS
+========================================================== */
+
+const startScreen =
+    document.getElementById("startScreen");
+
+const continueScreen =
+    document.getElementById("continueScreen");
+
+const registerScreen =
+    document.getElementById("registerScreen");
+
+const loadingScreen =
+    document.getElementById("loadingScreen");
+
+const gameScreen =
+    document.getElementById("gameScreen");
+
+
+
+/* ==========================================================
+   START
+========================================================== */
+
+let selectedMode = 4;
+
+
+
+/* ==========================================================
+   MODE BUTTONS
+========================================================== */
+
+document
+    .querySelectorAll(".mode-btn[data-mode]")
+
+    .forEach(button=>{
+
+        button.addEventListener(
+
+            "click",
+
+            ()=>{
+
+                selectedMode = Number(
+
+                    button.dataset.mode
+
+                );
+
+                checkSavedGame();
+
+            }
+
+        );
+
+    });
+
+
+
+/* ==========================================================
+   SAVE CHECK
+========================================================== */
+
+function checkSavedGame(){
+
+    startScreen.classList.add("hidden");
+
+
+
+    const saveName =
+
+        "belot_save_" + selectedMode;
+
+
+
+    const save =
+
+        localStorage.getItem(saveName);
+
+
+
+    if(save){
+
+        continueScreen.classList.remove("hidden");
+
+    }
+
+    else{
+
+        openRegister();
+
+    }
+
+}
+
+
+/* ==========================================================
+   CONTINUE / NEW GAME
+========================================================== */
+
+const continueBtn =
+    document.getElementById("continueBtn");
+
+const restartBtn =
+    document.getElementById("restartBtn");
+
+
+
+continueBtn.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        loadSavedGame();
+
+    }
+
+);
+
+
+
+restartBtn.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        continueScreen.classList.add("hidden");
+
+        openRegister();
+
+    }
+
+);
+
+
+
+/* ==========================================================
+   OPEN REGISTER
+========================================================== */
+
+function openRegister(){
+
+    continueScreen.classList.add("hidden");
+
+    registerScreen.classList.remove("hidden");
+
+}
+
+
+
+/* ==========================================================
+   LOAD GAME
+========================================================== */
+
+function loadSavedGame(){
+
+    const saveName =
+
+        "belot_save_" + selectedMode;
+
+    const save =
+
+        localStorage.getItem(saveName);
+
+    if(!save){
+
+        openRegister();
+
+        return;
+
+    }
+
+    Object.assign(
+
+        App,
+
+        JSON.parse(save)
+
+    );
+
+    continueScreen.classList.add("hidden");
+
+    gameScreen.classList.remove("hidden");
+
+    renderPlayers();
+
+    renderTeams();
+
+    updateDealer();
+
+    updateDealCounter();
+
+    updateGameValue();
+
+    renderTimer();
+
+}
+
+
+/* ==========================================================
+   PLAYER REGISTRATION
+========================================================== */
+
+const startGameBtn =
+    document.getElementById("startGameBtn");
+
+const player1 =
+    document.getElementById("player1");
+
+const player2 =
+    document.getElementById("player2");
+
+const player3 =
+    document.getElementById("player3");
+
+const player4 =
+    document.getElementById("player4");
+
+
+
+startGameBtn.addEventListener(
+
+    "click",
+
+    createNewGame
+
+);
+
+
+
+/* ==========================================================
+   CREATE GAME
+========================================================== */
+
+function createNewGame(){
+
+    const names = [
+
+        player1.value.trim(),
+
+        player2.value.trim(),
+
+        player3.value.trim(),
+
+        player4.value.trim()
+
+    ];
+
+
+
+    const requiredPlayers = selectedMode;
+
+
+
+    for(let i=0;i<requiredPlayers;i++){
+
+        if(names[i] === ""){
+
+            alert(
+
+                `Введите имя игрока №${i+1}`
+
+            );
+
+            return;
+
+        }
+
+    }
+
+
+
+    App.mode = selectedMode;
+
+    App.deal = 1;
+
+    App.timer = 0;
+
+    App.dealerIndex = 0;
+
+    App.currentPlayer = 0;
+
+    App.gameValue = 16;
+
+    App.declarations = [];
+
+    App.history = [];
+
+
+
+    App.players = [];
+
+
+
+    for(let i=0;i<requiredPlayers;i++){
+
+        App.players.push({
+
+            id:i+1,
+
+            name:names[i]
+
+        });
+
+    }
+
+
+
+    createTeams();
+
+    openGame();
+
+}
+
+
+/* ==========================================================
+   CREATE TEAMS
+========================================================== */
+
+function createTeams(){
+
+    switch(App.mode){
+
+        /* ---------- 2 PLAYERS ---------- */
+
+        case 2:
+
+            App.teams = [
+
+                {
+                    id:1,
+                    players:[0],
+                    score:0,
+                    bolts:0
+                },
+
+                {
+                    id:2,
+                    players:[1],
+                    score:0,
+                    bolts:0
+                }
+
+            ];
+
+            break;
+
+
+
+        /* ---------- 3 PLAYERS ---------- */
+
+        case 3:
+
+            App.teams = [
+
+                {
+                    id:1,
+                    players:[0],
+                    score:0,
+                    bolts:0
+                },
+
+                {
+                    id:2,
+                    players:[1,2],
+                    score:0,
+                    bolts:0
+                }
+
+            ];
+
+            break;
+
+
+
+        /* ---------- 4 PLAYERS ---------- */
+
+        default:
+
+            App.teams = [
+
+                {
+
+                    id:1,
+
+                    players:[0,2],      // 1 и 3
+
+                    score:0,
+
+                    bolts:0
+
+                },
+
+                {
+
+                    id:2,
+
+                    players:[1,3],      // 2 и 4
+
+                    score:0,
+
+                    bolts:0
+
+                }
+
+            ];
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   OPEN GAME
+========================================================== */
+
+function openGame(){
+
+    registerScreen.classList.add("hidden");
+
+    loadingScreen.classList.remove("hidden");
+
+
+
+    setTimeout(()=>{
+
+        loadingScreen.classList.add("hidden");
+
+        gameScreen.classList.remove("hidden");
+
+
+
+        renderPlayers();
+
+        renderTeams();
+
+        updateDealer();
+
+        updateDealCounter();
+
+        updateGameValue();
+
+        renderTimer();
+
+
+
+        saveGame();
+
+
+
+    },700);
+
+}
+
+
+
+/* ==========================================================
+   SAVE GAME
+========================================================== */
+
+function saveGame(){
+
+    localStorage.setItem(
+
+        "belot_save_" + App.mode,
+
+        JSON.stringify(App)
+
+    );
+
+}
+
+
+
+/* ==========================================================
+   NEXT DEAL
+========================================================== */
+
+function nextDeal(){
+
+    /* ---------- Следующая сдача ---------- */
+
+    App.deal++;
+
+    updateDealCounter();
+
+
+
+    /* ---------- Следующий сдающий ---------- */
+
+    App.dealerIndex++;
+
+    if(App.dealerIndex >= App.players.length){
+
+        App.dealerIndex = 0;
+
+    }
+
+    updateDealer();
+
+
+
+    /* ---------- Играющий ---------- */
+
+    App.currentPlayer = 0;
+
+    currentPlayer.value = 0;
+
+
+
+    /* ---------- Новая сдача ---------- */
+
+    App.declarations = [];
+
+    updateGameValue();
+
+
+
+    enemyPoints.value = "";
+
+    playerPoints.value = "";
+
+
+
+    saveGame();
+
+}
+
+
+
+/* ==========================================================
+   TEAM SCORE
+========================================================== */
+
+function addTeamScore(teamId,points){
+
+    App.teams[teamId].score += points;
+
+    renderTeams();
+
+}
+
+
+
+/* ==========================================================
+   TEAM BOLT
+========================================================== */
+
+function addBolt(teamId){
+
+    App.teams[teamId].bolts++;
+
+    renderTeams();
+
+}
+
+
+
+/* ==========================================================
+   SAVE AFTER EVERY HAND
+========================================================== */
+
+function finishDeal(){
+
+    saveGame();
+
+    nextDeal();
+
+}
+
+
+
+/* ==========================================================
+   RESET GAME
+========================================================== */
+
+function deleteSavedGame(){
+
+    localStorage.removeItem(
+
+        "belot_save_" + App.mode
+
+    );
+
+}
+
+
+
+/* ==========================================================
+   GAME END
+========================================================== */
+
+function checkGameEnd(){
+
+    if(App.teams[0].score >= 101){
+
+        deleteSavedGame();
+
+        alert("Победила Команда 1");
+
+        return true;
+
+    }
+
+    if(App.teams[1].score >= 101){
+
+        deleteSavedGame();
+
+        alert("Победила Команда 2");
+
+        return true;
+
+    }
+
+    return false;
+
+}
+
+
+
+
+
+
+
+
+
+
 /* ==========================================================
    APP
 ========================================================== */

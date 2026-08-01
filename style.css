@@ -2,7 +2,7 @@
 body {
   margin: 0;
   font-family: 'Roboto', Arial, sans-serif;
-  background-color: #0E0E0E; /* единый фон */
+  background-color: #0B0E1A; /* единый фон */
   color: #FFD700;            /* золотой текст */
   height: 100vh;
   display: flex;
@@ -19,6 +19,18 @@ body {
   justify-content: center;
   align-items: center;
 }
+.panel {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+}
+
+
+.screen, .panel {
+  background-color: #1A1F2E; /* графитовый фон панелей */
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+}
+
+
 
 .active {
   display: flex;

@@ -242,6 +242,14 @@ function calculateGamePoints() {
 }
 
 
+//для раздающего и играющего
+let dealerIndex = 0;
+function nextDealer() {
+  dealerIndex = (dealerIndex + 1) % players.length;
+  document.getElementById("dealerName").innerText = players[dealerIndex];
+}
+
+
 
 
 
@@ -274,6 +282,18 @@ function saveToHistory() {
   if (eventText.includes("Болт у команды 2")) {
     team2Bolts++;
   }
+//3 болта
+  if (team1Bolts >= 3) {
+  team1Score -= 10;
+  team1Bolts = 0;
+}
+if (team2Bolts >= 3) {
+  team2Score -= 10;
+  team2Bolts = 0;
+}
+
+
+  
 
   // Проверка -10
   if (eventText.includes("Неправильная раздача") || eventText.includes("Нет взятки")) {
@@ -286,7 +306,14 @@ function saveToHistory() {
       team2Score -= 10;
     }
   }
+// нет взятки
+if (player === 0 && opponent > 0) team1Score -= 10;
+if (opponent === 0 && player > 0) team2Score -= 10;
 
+
+
+
+  
   // Обновление интерфейса
   document.getElementById("team1Score").innerText = team1Score;
   document.getElementById("team2Score").innerText = team2Score;

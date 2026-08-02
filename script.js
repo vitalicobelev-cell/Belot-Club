@@ -624,7 +624,12 @@ function createNewGame(){
 
     App.declarations=[];
 
+App.timer = 0;
 
+createTeams();
+
+startTimer();
+   
 
     openGame();
 
@@ -947,6 +952,8 @@ function loadSavedGame(){
 
     renderTimer();
 
+   startTimer();
+   
 }
 
 
@@ -1179,9 +1186,14 @@ function saveDeal(){
 
         renderTeams();
 
-        saveGame();
+saveGame();
 
-        nextDeal();
+renderHistory();
+
+checkGameEnd();
+
+nextDeal();
+       
 
         return;
 
@@ -1235,11 +1247,13 @@ function saveDeal(){
 
         renderTeams();
 
-        saveGame();
+saveGame();
 
-        checkGameEnd();
+renderHistory();
 
-        nextDeal();
+checkGameEnd();
+
+nextDeal();
 
         return;
 
@@ -1293,11 +1307,13 @@ function saveDeal(){
 
         renderTeams();
 
-        saveGame();
+saveGame();
 
-        checkGameEnd();
+renderHistory();
 
-        nextDeal();
+checkGameEnd();
+
+nextDeal();
 
         return;
 
@@ -1339,13 +1355,15 @@ function saveDeal(){
 
 
 
-    renderTeams();
+   renderTeams();
 
-    saveGame();
+saveGame();
 
-    checkGameEnd();
+renderHistory();
 
-    nextDeal();
+checkGameEnd();
+
+nextDeal();
 
 }
 

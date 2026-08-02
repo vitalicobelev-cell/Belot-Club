@@ -46,7 +46,7 @@ h1 {
 
 /* Кнопки */
 button {
-  background-color: #A9A9A9;
+  background-color: #222222;
   color: #FFD700;
   border: none;
   padding: 1em 2em;
@@ -58,7 +58,7 @@ button {
 }
 
 button:hover {
-  background-color: #FFC107;
+  background-color: #474747;
   box-shadow: 0 0 15px #FFD700;
 }
 

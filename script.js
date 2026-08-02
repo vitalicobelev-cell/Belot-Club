@@ -1023,42 +1023,18 @@ function nextDeal(){
    GAME END
 ==========================================================*/
 
-function checkGameEnd(){
+    function checkGameEnd(){
 
     if(
 
-        App.teams[0].score>=101
-
-    ){
-
-        localStorage.removeItem(
-
-            getSaveKey()
-
-        );
-
-
-
-        alert(
-
-            "Победила Команда 1"
-
-        );
-
-
-
-        return true;
-
-    }
-
-
-
-    if(
+        App.teams[0].score>=101 ||
 
         App.teams[1].score>=101
 
     ){
 
+        stopTimer();
+
         localStorage.removeItem(
 
             getSaveKey()
@@ -1067,11 +1043,35 @@ function checkGameEnd(){
 
 
 
+        const winner =
+
+        App.teams[0].score>=101
+
+        ?1
+
+        :2;
+
+
+
         alert(
 
-            "Победила Команда 2"
+            "Победила команда " +
+
+            winner +
+
+            "\n\n" +
+
+            "Время партии: " +
+
+            timerLabel.innerHTML
 
         );
+
+
+
+        startScreen.classList.remove("hidden");
+
+        gameScreen.classList.add("hidden");
 
 
 
@@ -1481,6 +1481,351 @@ function renderHistory(){
     });
 
 }
+
+
+
+
+/* ==========================================================
+   TEAM PANELS
+========================================================== */
+
+function renderTeams(){
+
+    if(App.mode===4){
+
+        team1Name.innerHTML =
+
+            App.players[0].name +
+
+            " / " +
+
+            App.players[2].name;
+
+
+
+        team2Name.innerHTML =
+
+            App.players[1].name +
+
+            " / " +
+
+            App.players[3].name;
+
+    }
+
+
+
+    if(App.mode===3){
+
+        team1Name.innerHTML =
+
+            App.players[0].name;
+
+
+
+        team2Name.innerHTML =
+
+            App.players[1].name +
+
+            " / " +
+
+            App.players[2].name;
+
+    }
+
+
+
+    if(App.mode===2){
+
+        team1Name.innerHTML =
+
+            App.players[0].name;
+
+
+
+        team2Name.innerHTML =
+
+            App.players[1].name;
+
+    }
+
+
+
+    team1Score.innerHTML =
+
+        App.teams[0].score;
+
+
+
+    team2Score.innerHTML =
+
+        App.teams[1].score;
+
+
+
+    team1Bolts.innerHTML =
+
+        App.teams[0].bolts;
+
+
+
+    team2Bolts.innerHTML =
+
+        App.teams[1].bolts;
+
+}
+
+
+
+
+/* ==========================================================
+   DEAL COUNTER
+========================================================== */
+
+function updateDealCounter(){
+
+    dealCounter.innerHTML =
+
+        "№ " + App.deal;
+
+}
+
+
+
+/* ==========================================================
+   DEALER
+========================================================== */
+
+function updateDealer(){
+
+    dealerName.innerHTML =
+
+        App.players[App.dealerIndex].name;
+
+}
+
+
+
+/* ==========================================================
+   GAME VALUE
+========================================================== */
+
+function updateGameValue(){
+
+    gameValue.innerHTML =
+
+        App.gameValue;
+
+}
+
+
+
+/* ==========================================================
+   GAME VALUE
+========================================================== */
+
+function calculateGameValue(){
+
+    let value = 16;
+
+    App.declarations.forEach(item=>{
+
+        value += item.points;
+
+    });
+
+    App.gameValue = value;
+
+    updateGameValue();
+
+}
+
+
+/* ==========================================================
+   DECLARATIONS
+========================================================== */
+
+function addDeclaration(name, points){
+
+    App.declarations.push({
+
+        name,
+
+        points
+
+    });
+
+    calculateGameValue();
+
+}
+
+
+
+function clearDeclarations(){
+
+    App.declarations = [];
+
+    App.gameValue = 16;
+
+    updateGameValue();
+
+}
+
+
+
+/* ==========================================================
+   AUTO SECOND SCORE
+========================================================== */
+
+playerPoints.addEventListener(
+
+    "input",
+
+    ()=>{
+
+        let p = Number(playerPoints.value);
+
+        if(isNaN(p)) return;
+
+        if(p<0) return;
+
+        if(p>App.gameValue) return;
+
+        enemyPoints.value =
+
+            App.gameValue - p;
+
+    }
+
+);
+
+
+
+enemyPoints.addEventListener(
+
+    "input",
+
+    ()=>{
+
+        let e = Number(enemyPoints.value);
+
+        if(isNaN(e)) return;
+
+        if(e<0) return;
+
+        if(e>App.gameValue) return;
+
+        playerPoints.value =
+
+            App.gameValue - e;
+
+    }
+
+);
+
+
+function normalizeScore(){
+
+    let p = Number(playerPoints.value);
+
+    let e = Number(enemyPoints.value);
+
+
+
+    if(p<0) p = 0;
+
+    if(e<0) e = 0;
+
+
+
+    if(p>App.gameValue)
+
+        p = App.gameValue;
+
+
+
+    if(e>App.gameValue)
+
+        e = App.gameValue;
+
+
+
+    playerPoints.value = p;
+
+    enemyPoints.value = e;
+
+}
+
+
+
+/* ==========================================================
+   BELOT CLUB
+   script.js
+   Часть 10/10
+==========================================================*/
+
+
+/* ==========================================================
+   TIMER
+==========================================================*/
+
+let timerID = null;
+
+function startTimer(){
+
+    stopTimer();
+
+    timerID = setInterval(()=>{
+
+        App.timer++;
+
+        renderTimer();
+
+    },1000);
+
+}
+
+function stopTimer(){
+
+    if(timerID){
+
+        clearInterval(timerID);
+
+        timerID = null;
+
+    }
+
+}
+
+function renderTimer(){
+
+    const min =
+
+    Math.floor(App.timer/60);
+
+    const sec =
+
+    App.timer%60;
+
+    timerLabel.innerHTML =
+
+    String(min).padStart(2,"0") +
+
+    ":" +
+
+    String(sec).padStart(2,"0");
+
+}
+
+
+/* ==========================================================
+   INIT
+==========================================================*/
+
+hidePlayerLists();
+
+renderTimer();
+
 
 
 

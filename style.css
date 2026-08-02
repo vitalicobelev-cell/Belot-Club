@@ -842,3 +842,152 @@ input:focus{
     }
 
 }
+
+
+
+/* =========================================================
+   START SCREENS
+========================================================= */
+
+.start-screen{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#1d2330;
+
+    z-index:5000;
+
+}
+
+.start-window{
+
+    width:min(92%,430px);
+
+    background:#2a3142;
+
+    border-radius:20px;
+
+    padding:28px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+
+}
+
+.start-logo{
+
+    text-align:center;
+
+    font-size:30px;
+
+    letter-spacing:2px;
+
+}
+
+.start-title{
+
+    text-align:center;
+
+    font-size:20px;
+
+    font-weight:700;
+
+}
+
+.mode-btn{
+
+    width:100%;
+
+    padding:15px;
+
+    border:none;
+
+    border-radius:12px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.mode-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.back-btn{
+
+    align-self:flex-start;
+
+    border:none;
+
+    background:none;
+
+    color:#ffffff;
+
+    font-size:17px;
+
+    cursor:pointer;
+
+    padding:4px 0;
+
+}
+
+.player-row{
+
+    display:flex;
+
+}
+
+.player-row.hidden{
+
+    display:none;
+
+}
+
+.players-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:12px;
+
+}
+
+.players-form input{
+
+    width:100%;
+
+    padding:12px 14px;
+
+    border-radius:10px;
+
+    border:none;
+
+    outline:none;
+
+    font-size:16px;
+
+}
+
+
+

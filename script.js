@@ -357,10 +357,10 @@ ${App.players[App.dealerIndex].name}
 ========================================================== */
 
 const continueBtn =
-    document.getElementById("continueBtn");
+    document.getElementById("continueGame");
 
 const restartBtn =
-    document.getElementById("restartBtn");
+    document.getElementById("newGame");
 
 /* ==========================================================
    CONTINUE GAME

@@ -202,11 +202,6 @@ function getSaveKey(){
 
 
 
-
-
-
-
-
 /* ==========================================================
 
    BELOT CLUB
@@ -459,7 +454,10 @@ function buildPlayerLists(){
 
         playersDB.forEach(name=>{
 
-            const item=document.createElement("div");
+            const itemWrapper = document.createElement("div");
+            itemWrapper.className = "player-item-wrapper";
+
+            const item = document.createElement("div");
 
             item.className="player-item";
 
@@ -473,7 +471,41 @@ function buildPlayerLists(){
 
             };
 
-            list.appendChild(item);
+
+
+            const deleteBtn = document.createElement("button");
+
+            deleteBtn.className = "player-delete-btn";
+
+            deleteBtn.textContent = "✕";
+
+            deleteBtn.title = "Удалить игрока";
+
+            deleteBtn.onclick = (e)=>{
+
+                e.stopPropagation();
+
+                const confirmDelete = confirm(`Удалить игрока "${name}" из списка?`);
+
+                if(confirmDelete){
+
+                    playersDB = playersDB.filter(p => p !== name);
+
+                    savePlayersDB();
+
+                    buildPlayerLists();
+
+                }
+
+            };
+
+
+
+            itemWrapper.appendChild(item);
+
+            itemWrapper.appendChild(deleteBtn);
+
+            list.appendChild(itemWrapper);
 
         });
 
@@ -489,9 +521,27 @@ function buildPlayerLists(){
 
         add.onclick=()=>{
 
-            hidePlayerLists();
-
-            playerInputs[index].focus();
+            const newName = prompt("Введите имя игрока:");
+            
+            if(newName && newName.trim() !== ""){
+                
+                if(!playersDB.includes(newName.trim())){
+                    
+                    playersDB.push(newName.trim());
+                    
+                    savePlayersDB();
+                    
+                }
+                
+                playerInputs[index].value = newName.trim();
+                
+                buildPlayerLists();
+                
+                hidePlayerLists();
+                
+                playerLists[index].classList.remove("hidden");
+                
+            }
 
         };
 
@@ -543,7 +593,11 @@ document.addEventListener("click",e=>{
 
         !e.target.classList.contains("player-input") &&
 
-        !e.target.classList.contains("player-item")
+        !e.target.classList.contains("player-item") &&
+
+        !e.target.classList.contains("player-item-wrapper") &&
+
+        !e.target.classList.contains("player-delete-btn")
 
     ){
 
@@ -1191,7 +1245,7 @@ function saveDeal(){
 
 
     /* ======================================
-       НЕПРАВИЛЬНАЯ РАЗД��ЧА
+       НЕПРАВИЛЬНАЯ РАЗДАЧА
     ====================================== */
 
     if(enemy===0 && player===0){

@@ -127,6 +127,7 @@ function confirmPlayers() {
   showScreen("game");
 }
 
+
 // Таймер
 let timerInterval = null;
 let secondsElapsed = 0;
@@ -153,7 +154,7 @@ function updateTimer() {
 }
 
 // Автозаполнение очков соперника
-let gamePoints = 16; // по умолчанию
+let gamePoints = 16; // по умолчанию, можно менять при выборе объявлений
 
 function autoFillOpponent() {
   let player = parseInt(document.getElementById("playerScore").value);
@@ -261,4 +262,103 @@ function saveToHistory() {
   document.getElementById("team2Bolts").innerText = team2Bolts;
 
   // Добавление в таблицу истории
-  let table = document.getElementById("history
+  let table = document.getElementById("historyTable");
+  let row = table.insertRow();
+  row.insertCell(0).innerText = roundNumber;
+  row.insertCell(1).innerText = player;
+  row.insertCell(2).innerText = opponent;
+  row.insertCell(3).innerText = `${team1Bolts} - ${team2Bolts}`;
+  row.insertCell(4).innerText = eventText;
+  row.insertCell(5).innerText = document.getElementById("timer").innerText;
+
+  // Проверка победы
+  if (team1Score >= 101 || team2Score >= 101) {
+    showVictory();
+  } else {
+    roundNumber++;
+    document.getElementById("roundNumber").innerText = "Раздача: " + roundNumber;
+    showScreen('game');
+  }
+}
+
+// Показ истории
+function showHistory() {
+  showScreen('history');
+}
+
+// Закрыть историю
+function closeHistory() {
+  showScreen('game');
+}
+
+// Экран победы
+function showVictory() {
+  let text = team1Score >= 101 ? "Команда 1 набрала 101 очко!" : "Команда 2 набрала 101 очко!";
+  document.getElementById("victoryText").innerText = text;
+  document.getElementById("finalStats").innerText =
+    `Итог: Команда 1 — ${team1Score} очков, Команда 2 — ${team2Score} очков. Болты: ${team1Bolts} - ${team2Bolts}. Время: ${document.getElementById("timer").innerText}`;
+  showScreen('victory');
+}
+
+// Запуск новой игры
+function startNewGame() {
+  team1Score = 0;
+  team2Score = 0;
+  team1Bolts = 0;
+  team2Bolts = 0;
+  roundNumber = 1;
+  secondsElapsed = 0;
+  clearInterval(timerInterval);
+  timerRunning = false;
+  document.getElementById("timer").innerText = "⏱ 00:00";
+  document.getElementById("team1Score").innerText = team1Score;
+  document.getElementById("team2Score").innerText = team2Score;
+  document.getElementById("team1Bolts").innerText = team1Bolts;
+  document.getElementById("team2Bolts").innerText = team2Bolts;
+  document.getElementById("roundNumber").innerText = "Раздача: " + roundNumber;
+  document.getElementById("historyTable").innerHTML = "";
+  document.getElementById("playerScore").value = "";
+  document.getElementById("opponentScore").value = "";
+  saveGame();
+}
+
+// Начать новую игру с экрана победы
+function newGame() {
+  startNewGame();
+  showScreen('game');
+}
+
+
+// Сохранение состояния игры
+function saveGame() {
+  let gameState = {
+    team1Score,
+    team2Score,
+    team1Bolts,
+    team2Bolts,
+    roundNumber,
+    secondsElapsed,
+    players,
+    currentMode
+  };
+  localStorage.setItem("belotGame", JSON.stringify(gameState));
+}
+
+// Загрузка сохранённой игры
+function loadGame(state) {
+  team1Score = state.team1Score;
+  team2Score = state.team2Score;
+  team1Bolts = state.team1Bolts;
+  team2Bolts = state.team2Bolts;
+  roundNumber = state.roundNumber;
+  secondsElapsed = state.secondsElapsed;
+  players = state.players;
+  currentMode = state.currentMode;
+
+  document.getElementById("team1Score").innerText = team1Score;
+  document.getElementById("team2Score").innerText = team2Score;
+  document.getElementById("team1Bolts").innerText = team1Bolts;
+  document.getElementById("team2Bolts").innerText = team2Bolts;
+  document.getElementById("roundNumber").innerText = "Раздача: " + roundNumber;
+  updateTimer();
+}

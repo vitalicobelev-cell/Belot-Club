@@ -1085,6 +1085,528 @@ function checkWinner(){
 
 
 
+/* ==========================================================
+   HISTORY
+========================================================== */
+
+function addHistoryRow(record){
+
+    gameState.history.push(record);
+
+    renderHistory();
+
+}
+
+function renderHistory(){
+
+    historyBody.innerHTML="";
+
+    gameState.history.forEach(item=>{
+
+        const row=document.createElement("tr");
+
+        /* ---------- № ---------- */
+
+        row.appendChild(createCell(item.round));
+
+        /* ---------- Стоимость ---------- */
+
+        row.appendChild(createCell(item.game));
+
+        /* ---------- Объявы ---------- */
+
+        row.appendChild(createCell(
+            item.announce>0
+            ? "+"+item.announce
+            : "-"
+        ));
+
+        /* ---------- Команда 1 ---------- */
+
+        const team1Cell=document.createElement("td");
+
+        team1Cell.innerHTML=`
+            <div>${item.team1}</div>
+            <small class="historyPenalty">
+                ${item.team1Note}
+            </small>
+        `;
+
+        row.appendChild(team1Cell);
+
+        /* ---------- Команда 2 ---------- */
+
+        const team2Cell=document.createElement("td");
+
+        team2Cell.innerHTML=`
+            <div>${item.team2}</div>
+            <small class="historyPenalty">
+                ${item.team2Note}
+            </small>
+        `;
+
+        row.appendChild(team2Cell);
+
+        /* ---------- Раздающий ---------- */
+
+        row.appendChild(createCell(item.dealer));
+
+        /* ---------- Играющий ---------- */
+
+        row.appendChild(createCell(item.active));
+
+        historyBody.appendChild(row);
+
+    });
+
+}
+
+function createCell(value){
+
+    const td=document.createElement("td");
+
+    td.textContent=value;
+
+    return td;
+
+}
+
+/* ==========================================================
+   HISTORY WINDOW
+========================================================== */
+
+function openHistory(){
+
+    renderHistory();
+
+    showScreen(historyScreen);
+
+}
+
+function closeHistory(){
+
+    if(gameState.mode===4){
+
+        showScreen(gameScreen4);
+
+    }else{
+
+        showScreen(gameScreen3);
+
+    }
+
+}
+
+/* ==========================================================
+   RULES
+========================================================== */
+
+function openRules(){
+
+    document
+    .getElementById("rulesModal")
+    .classList
+    .add("active");
+
+}
+
+function closeRules(){
+
+    document
+    .getElementById("rulesModal")
+    .classList
+    .remove("active");
+
+}
+
+/* ==========================================================
+   WINNER
+========================================================== */
+
+function showWinner(team){
+
+    stopTimer();
+
+    deleteSave();
+
+    showScreen(victoryScreen);
+
+    document
+    .getElementById("winnerTitle")
+    .textContent=
+    `🏆 Победила команда ${team}`;
+
+    document
+    .getElementById("winnerText")
+    .textContent=
+    `Игра окончена после ${gameState.round-1} раздач`;
+
+    document
+    .getElementById("victoryStatistics")
+    .innerHTML=`
+
+        <p>
+            Команда 1:
+            <b>${gameState.team1.score}</b>
+        </p>
+
+        <p>
+            Болты:
+            ${gameState.team1.bolts}
+        </p>
+
+        <br>
+
+        <p>
+            Команда 2:
+            <b>${gameState.team2.score}</b>
+        </p>
+
+        <p>
+            Болты:
+            ${gameState.team2.bolts}
+        </p>
+
+        <br>
+
+        <p>
+
+            Время игры
+
+            <b>
+
+                ${gameTimer.textContent}
+
+            </b>
+
+        </p>
+
+    `;
+
+}
+
+/* ==========================================================
+   NEW GAME
+========================================================== */
+
+function resetGame(){
+
+    stopTimer();
+
+    deleteSave();
+
+    gameState.mode=0;
+
+    gameState.players=[];
+
+    gameState.round=1;
+
+    gameState.timerSeconds=0;
+
+    gameState.baseGameValue=16;
+
+    gameState.gameValue=16;
+
+    gameState.announcementPoints=0;
+
+    gameState.announcementText="";
+
+    gameState.team1.score=0;
+    gameState.team2.score=0;
+
+    gameState.team1.bolts=0;
+    gameState.team2.bolts=0;
+
+    gameState.team1.history=[];
+    gameState.team2.history=[];
+
+    gameState.history=[];
+
+}
+
+
+
+
+/* ==========================================================
+   RULES
+========================================================== */
+
+function fillRules(){
+
+    const rules=document.getElementById("rulesContent");
+
+    rules.innerHTML=`
+
+<h3>🎯 Цель игры</h3>
+
+<p>
+
+Побеждает команда, первой набравшая
+<b>101</b> очко или больше.
+
+Счёт может уходить в минус.
+
+</p>
+
+<h3>🃏 Стоимость игры</h3>
+
+<ul>
+
+<li>Простая игра — <b>16</b></li>
+<li>Все объявления прибавляются к стоимости игры.</li>
+<li>Бэла (+2) прибавляется только к очкам команды и не увеличивает стоимость игры.</li>
+
+</ul>
+
+<h3>📣 Объявы</h3>
+
+<p>
+
+Терцы, пятидесятки и сотни могут быть несколько раз.
+
+</p>
+
+<p>
+
+Бэла, каре девяток и каре валетов могут быть только один раз.
+
+</p>
+
+<h3>⚡ Болт</h3>
+
+<p>
+
+Если играющий набрал меньше половины стоимости игры,
+но больше нуля —
+
+он получает болт,
+а все очки игры переходят соперникам.
+
+</p>
+
+<p>
+
+После третьего болта:
+
+<b>⚡⚡⚡ → −10</b>
+
+после чего болты обнуляются.
+
+</p>
+
+<h3>🚫 Нет взятки</h3>
+
+<p>
+
+Если соперники набрали 0 —
+
+они получают штраф
+
+<b>-10</b>,
+
+а играющий получает все очки игры.
+
+</p>
+
+<h3>❌ Неправильная раздача</h3>
+
+<p>
+
+При результате
+
+<b>0 : 0</b>
+
+раздающий получает
+
+<b>-10</b>,
+
+очки игры никому не начисляются.
+
+</p>
+
+`;
+
+}
+
+/* ==========================================================
+   ANNOUNCEMENTS
+========================================================== */
+
+const announcements=[
+
+    {
+        name:"Тэрц",
+        points:2,
+        multiple:true
+    },
+
+    {
+        name:"50",
+        points:4,
+        multiple:true
+    },
+
+    {
+        name:"100",
+        points:8,
+        multiple:true
+    },
+
+    {
+        name:"Каре",
+        points:10,
+        multiple:true
+    },
+
+    {
+        name:"Каре 9",
+        points:14,
+        multiple:false
+    },
+
+    {
+        name:"Каре В",
+        points:20,
+        multiple:false
+    },
+
+    {
+        name:"Бэла",
+        points:2,
+        multiple:false,
+        bela:true
+    }
+
+];
+
+function buildAnnouncements(){
+
+    const list=
+    document.getElementById("announcementList");
+
+    list.innerHTML="";
+
+    announcements.forEach(item=>{
+
+        const row=document.createElement("div");
+
+        row.className="announcementRow";
+
+        const title=document.createElement("div");
+
+        title.className="announcementTitle";
+
+        title.textContent=
+        `${item.name} (+${item.points})`;
+
+        const counter=document.createElement("div");
+
+        counter.className="announcementCounter";
+
+        const minus=document.createElement("button");
+
+        minus.className="counterButton";
+
+        minus.textContent="−";
+
+        const value=document.createElement("span");
+
+        value.className="counterValue";
+
+        value.textContent="0";
+
+        const plus=document.createElement("button");
+
+        plus.className="counterButton";
+
+        plus.textContent="+";
+
+        let count=0;
+
+        plus.addEventListener("click",()=>{
+
+            if(!item.multiple && count===1){
+
+                return;
+
+            }
+
+            count++;
+
+            value.textContent=count;
+
+            if(!item.bela){
+
+                gameState.announcementPoints+=item.points;
+
+            }
+
+            updateGameValue();
+
+        });
+
+        minus.addEventListener("click",()=>{
+
+            if(count===0){
+
+                return;
+
+            }
+
+            count--;
+
+            value.textContent=count;
+
+            if(!item.bela){
+
+                gameState.announcementPoints-=item.points;
+
+            }
+
+            updateGameValue();
+
+        });
+
+        counter.appendChild(minus);
+
+        counter.appendChild(value);
+
+        counter.appendChild(plus);
+
+        row.appendChild(title);
+
+        row.appendChild(counter);
+
+        list.appendChild(row);
+
+    });
+
+}
+
+/* ==========================================================
+   START
+========================================================== */
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+    fillRules();
+
+    buildAnnouncements();
+
+    updateTimer();
+
+    if(localStorage.getItem(SAVE_GAME_KEY)===null){
+
+        document
+        .getElementById("continueGameButton")
+        .disabled=true;
+
+    }
+
+});
+
+
+
 
 
 

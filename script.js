@@ -231,6 +231,20 @@ function validateScores() {
   showScreen('confirmation');
 }
 
+//для очков обьяв
+function calculateGamePoints() {
+  let base = 16;
+  document.querySelectorAll('#announcements input:checked').forEach(c => {
+    base += parseInt(c.value);
+  });
+  gamePoints = base;
+  document.querySelector("#gamePointsDisplay").innerText = `Игра: ${gamePoints}`;
+}
+
+
+
+
+
 // Очки команд и болты
 let team1Score = 0;
 let team2Score = 0;

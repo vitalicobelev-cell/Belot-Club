@@ -1,7 +1,6 @@
-/* ======================================================
-   BELOT CLUB
-   style.css
-====================================================== */
+/* =========================================================
+   BELOT CLUB v1.0
+========================================================= */
 
 *{
     margin:0;
@@ -11,27 +10,25 @@
 
 :root{
 
-    --bg:#1b202b;
+    --bg:#1d2330;
 
-    --card:#252c39;
+    --panel:#2b3346;
 
-    --card2:#2c3545;
+    --panel-light:#3b4863;
 
-    --gold:#d8b56a;
-
-    --gold-dark:#8f6c2e;
-
-    --text:#f4f4f4;
-
-    --gray:#9ea8b7;
+    --accent:#ff9800;
 
     --green:#4caf50;
 
-    --red:#d34f4f;
+    --red:#e53935;
+
+    --text:#ffffff;
+
+    --text2:#cfd8dc;
 
     --radius:18px;
 
-    --shadow:0 8px 24px rgba(0,0,0,.35);
+    --shadow:0 8px 25px rgba(0,0,0,.35);
 
 }
 
@@ -43,505 +40,27 @@ body{
 
     font-family:Arial,Helvetica,sans-serif;
 
-    display:flex;
-
-    justify-content:center;
-
     min-height:100vh;
 
+    overflow:hidden;
+
 }
 
-.app{
+
+
+/* =========================================================
+   SCREENS
+========================================================= */
+
+.start-screen,
+
+.game-screen,
+
+.loading-screen{
 
     width:100%;
 
-    max-width:430px;
-
-    padding:12px;
-
-}
-
-
-
-/* ======================================================
-   HEADER
-====================================================== */
-
-.topbar{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:10px;
-
-}
-
-.logo{
-
-    color:var(--gold);
-
-    font-size:22px;
-
-    font-weight:bold;
-
-    letter-spacing:1px;
-
-}
-
-.icon-btn{
-
-    width:42px;
-
-    height:42px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:var(--card);
-
-    color:var(--gold);
-
-    cursor:pointer;
-
-    font-size:20px;
-
-    box-shadow:var(--shadow);
-
-    transition:.15s;
-
-}
-
-.icon-btn:active{
-
-    transform:scale(.95);
-
-}
-
-
-
-/* ======================================================
-   INFO BAR
-====================================================== */
-
-.info-bar{
-
-    display:grid;
-
-    grid-template-columns:70px 1fr 70px;
-
-    align-items:center;
-
-    margin-bottom:12px;
-
-}
-
-.deal-counter{
-
-    text-align:left;
-
-    color:var(--gray);
-
-    font-weight:bold;
-
-}
-
-.timer{
-
-    text-align:center;
-
-    color:var(--gold);
-
-    font-size:21px;
-
-    font-weight:bold;
-
-}
-
-.info-right{
-
-    text-align:right;
-
-}
-
-
-
-/* ======================================================
-   SCORE PANEL
-====================================================== */
-
-.score-panel{
-
-    background:transparent;
-
-    cursor:pointer;
-
-    margin-bottom:14px;
-
-    transition:.2s;
-
-}
-
-.score-panel:active{
-
-    transform:scale(.985);
-
-}
-
-.teams{
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:10px;
-
-}
-
-.team{
-
-    background:var(--card);
-
-    border:2px solid var(--gold-dark);
-
-    border-radius:20px;
-
-    padding:12px;
-
-    box-shadow:var(--shadow);
-
-}
-
-.team-title{
-
-    text-align:center;
-
-    color:var(--gold);
-
-    font-weight:bold;
-
-    margin-bottom:8px;
-
-    font-size:18px;
-
-}
-
-.team-players{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:4px;
-
-    min-height:48px;
-
-}
-
-.team-footer{
-
-    margin-top:10px;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-}
-
-.team-score{
-
-    font-size:30px;
-
-    font-weight:bold;
-
-}
-
-.team-bolts{
-
-    font-size:20px;
-
-}
-
-
-/* ======================================================
-   GAME PANEL
-====================================================== */
-
-.game-panel{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-
-}
-
-
-
-.row{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    gap:12px;
-
-}
-
-
-
-.row-label{
-
-    font-size:17px;
-
-    color:var(--text);
-
-    white-space:nowrap;
-
-}
-
-
-
-.row-value{
-
-    color:var(--gold);
-
-    font-size:18px;
-
-    font-weight:bold;
-
-}
-
-
-
-/* ======================================================
-   SELECT
-====================================================== */
-
-.select{
-
-    width:180px;
-
-    height:42px;
-
-    border:none;
-
-    outline:none;
-
-    border-radius:14px;
-
-    background:var(--card);
-
-    color:var(--text);
-
-    padding:0 12px;
-
-    font-size:16px;
-
-    box-shadow:var(--shadow);
-
-    cursor:pointer;
-
-}
-
-
-
-/* ======================================================
-   GAME COST
-====================================================== */
-
-.game-cost{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin:4px 0;
-
-}
-
-
-
-.cost-badge{
-
-    min-width:95px;
-
-    text-align:center;
-
-    background:var(--gold);
-
-    color:#222;
-
-    font-weight:bold;
-
-    font-size:18px;
-
-    padding:8px 18px;
-
-    border-radius:999px;
-
-    box-shadow:var(--shadow);
-
-}
-
-
-
-.declare-btn{
-
-    border:none;
-
-    background:var(--card);
-
-    color:var(--text);
-
-    border-radius:14px;
-
-    padding:10px 18px;
-
-    font-size:16px;
-
-    cursor:pointer;
-
-    box-shadow:var(--shadow);
-
-    transition:.15s;
-
-}
-
-
-
-.declare-btn:active{
-
-    transform:scale(.97);
-
-}
-
-
-
-/* ======================================================
-   INPUTS
-====================================================== */
-
-input[type="number"]{
-
-    width:120px;
-
-    height:42px;
-
-    border:none;
-
-    outline:none;
-
-    border-radius:14px;
-
-    background:var(--card);
-
-    color:var(--text);
-
-    text-align:center;
-
-    font-size:18px;
-
-    box-shadow:var(--shadow);
-
-}
-
-
-
-input::placeholder{
-
-    color:#6d7684;
-
-}
-
-
-
-input:focus{
-
-    outline:2px solid var(--gold);
-
-}
-
-
-
-/* ======================================================
-   SAVE
-====================================================== */
-
-.save-section{
-
-    margin-top:8px;
-
-}
-
-
-
-.save-btn{
-
-    width:100%;
-
-    height:56px;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:var(--gold);
-
-    color:#222;
-
-    font-size:20px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-
-    box-shadow:var(--shadow);
-
-    transition:.2s;
-
-}
-
-
-
-.save-btn:active{
-
-    transform:scale(.98);
-
-}
-
-
-
-.save-btn.saved{
-
-    background:var(--green);
-
-    color:#fff;
-
-}
-
-
-/* ======================================================
-   MODALS
-====================================================== */
-
-.modal{
-
-    position:fixed;
-
-    inset:0;
-
-    background:rgba(0,0,0,.65);
+    min-height:100vh;
 
     display:flex;
 
@@ -551,43 +70,330 @@ input:focus{
 
     padding:20px;
 
-    z-index:1000;
-
 }
 
 .hidden{
 
-    display:none;
+    display:none !important;
 
 }
+
+
+
+/* =========================================================
+   WINDOWS
+========================================================= */
+
+.start-window,
+
+.history-window,
 
 .modal-window{
 
     width:100%;
 
-    max-width:430px;
+    max-width:520px;
 
-    max-height:90vh;
+    background:var(--panel);
 
-    overflow-y:auto;
+    border-radius:var(--radius);
 
-    background:var(--card);
-
-    border-radius:22px;
-
-    padding:18px;
+    padding:24px;
 
     box-shadow:var(--shadow);
 
 }
 
-.modal-large{
 
-    max-width:520px;
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logo{
+
+    text-align:center;
+
+    font-size:34px;
+
+    margin-bottom:30px;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
 
 }
 
-.modal-header{
+
+
+/* =========================================================
+   TITLES
+========================================================= */
+
+h2{
+
+    text-align:center;
+
+    margin-bottom:20px;
+
+    font-size:26px;
+
+}
+
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.mode-btn,
+
+.save-btn,
+
+.back-btn{
+
+    width:100%;
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:16px;
+
+    margin-top:12px;
+
+    font-size:18px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.mode-btn{
+
+    background:var(--accent);
+
+    color:#fff;
+
+}
+
+.mode-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.save-btn{
+
+    background:var(--green);
+
+    color:#fff;
+
+}
+
+.back-btn{
+
+    width:auto;
+
+    padding:10px 18px;
+
+    background:transparent;
+
+    color:var(--text2);
+
+    margin-bottom:20px;
+
+}
+
+/* =========================================================
+   PLAYER REGISTER
+========================================================= */
+
+.player-row{
+
+    position:relative;
+
+    margin-bottom:16px;
+
+}
+
+
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+.player-input,
+
+#playerPoints,
+
+#enemyPoints{
+
+    width:100%;
+
+    background:var(--panel-light);
+
+    color:var(--text);
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:15px 18px;
+
+    font-size:18px;
+
+    outline:none;
+
+    transition:.2s;
+
+}
+
+
+
+.player-input:focus,
+
+#playerPoints:focus,
+
+#enemyPoints:focus{
+
+    background:#465574;
+
+    box-shadow:0 0 0 2px var(--accent);
+
+}
+
+
+
+.player-input::placeholder,
+
+#playerPoints::placeholder,
+
+#enemyPoints::placeholder{
+
+    color:#cfd8dc;
+
+}
+
+
+
+/* =========================================================
+   PLAYER LIST
+========================================================= */
+
+.player-list{
+
+    position:absolute;
+
+    left:0;
+
+    right:0;
+
+    top:58px;
+
+    z-index:100;
+
+    background:var(--panel-light);
+
+    border-radius:14px;
+
+    overflow:hidden;
+
+    box-shadow:var(--shadow);
+
+    max-height:240px;
+
+    overflow-y:auto;
+
+}
+
+
+
+/* =========================================================
+   PLAYER ITEM
+========================================================= */
+
+.player-item{
+
+    padding:14px 18px;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+
+
+.player-item:last-child{
+
+    border-bottom:none;
+
+}
+
+
+
+.player-item:hover{
+
+    background:#566887;
+
+}
+
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+.player-list::-webkit-scrollbar{
+
+    width:8px;
+
+}
+
+.player-list::-webkit-scrollbar-thumb{
+
+    background:#6a7da1;
+
+    border-radius:10px;
+
+}
+
+
+/* =========================================================
+   GAME SCREEN
+========================================================= */
+
+.game-screen{
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:flex-start;
+
+    align-items:stretch;
+
+    gap:16px;
+
+    max-width:700px;
+
+    margin:0 auto;
+
+    padding:18px;
+
+}
+
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.top-bar{
 
     display:flex;
 
@@ -595,261 +401,284 @@ input:focus{
 
     align-items:center;
 
-    margin-bottom:18px;
-
-}
-
-.modal-header h2{
-
-    color:var(--gold);
-
-    font-size:22px;
-
-}
-
-.close-btn{
-
-    width:38px;
-
-    height:38px;
-
-    border:none;
-
-    border-radius:12px;
-
-    background:var(--card2);
-
-    color:var(--text);
-
     font-size:18px;
 
-    cursor:pointer;
+    color:var(--text2);
+
+    margin-bottom:6px;
 
 }
 
-.close-btn:active{
+#dealCounter{
 
-    transform:scale(.95);
+    width:90px;
 
-}
-
-
-
-/* ======================================================
-   MODAL CONTENT
-====================================================== */
-
-.declare-content,
-
-.confirm-body,
-
-.rules-content,
-
-.history-content{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:10px;
-
-}
-
-.confirm-body{
-
-    margin-bottom:20px;
-
-    line-height:1.5;
-
-}
-
-.rules-content{
-
-    line-height:1.7;
-
-}
-
-.history-content{
-
-    max-height:60vh;
-
-    overflow-y:auto;
-
-}
-
-
-
-/* ======================================================
-   MODAL BUTTONS
-====================================================== */
-
-.modal-save{
-
-    width:100%;
-
-    height:48px;
-
-    border:none;
-
-    border-radius:16px;
-
-    background:var(--gold);
-
-    color:#222;
-
-    font-size:18px;
+    text-align:left;
 
     font-weight:bold;
 
-    cursor:pointer;
-
 }
 
-.modal-buttons{
-
-    display:flex;
-
-    gap:10px;
-
-}
-
-.secondary-btn,
-
-.primary-btn{
+#timerLabel{
 
     flex:1;
 
-    height:48px;
+    text-align:center;
 
-    border:none;
-
-    border-radius:16px;
-
-    cursor:pointer;
-
-    font-size:17px;
-
-}
-
-.secondary-btn{
-
-    background:var(--card2);
-
-    color:var(--text);
-
-}
-
-.primary-btn{
-
-    background:var(--gold);
-
-    color:#222;
+    font-size:20px;
 
     font-weight:bold;
 
-}
-
-
-
-/* ======================================================
-   TOAST
-====================================================== */
-
-.toast{
-
-    position:fixed;
-
-    left:50%;
-
-    bottom:28px;
-
-    transform:translateX(-50%);
-
-    background:var(--green);
-
-    color:#fff;
-
-    padding:14px 24px;
-
-    border-radius:999px;
-
-    font-size:18px;
-
-    font-weight:bold;
-
-    box-shadow:var(--shadow);
-
-    z-index:2000;
+    color:white;
 
 }
 
+.top-right{
 
-
-/* ======================================================
-   SCROLLBAR
-====================================================== */
-
-::-webkit-scrollbar{
-
-    width:8px;
-
-}
-
-::-webkit-scrollbar-thumb{
-
-    background:var(--gold-dark);
-
-    border-radius:999px;
-
-}
-
-
-
-/* ======================================================
-   MOBILE
-====================================================== */
-
-@media (max-width:380px){
-
-    .logo{
-
-        font-size:18px;
-
-    }
-
-    .team-score{
-
-        font-size:24px;
-
-    }
-
-    .row-label{
-
-        font-size:15px;
-
-    }
-
-    .select{
-
-        width:155px;
-
-    }
-
-    input[type="number"]{
-
-        width:105px;
-
-    }
+    width:90px;
 
 }
 
 
 
 /* =========================================================
-   START SCREENS
+   TEAM CARDS
 ========================================================= */
 
-.start-screen{
+.teams-wrap{
+
+    display:flex;
+
+    gap:14px;
+
+}
+
+.team-card{
+
+    flex:1;
+
+    background:var(--panel);
+
+    border-radius:18px;
+
+    padding:16px;
+
+    box-shadow:var(--shadow);
+
+    transition:.2s;
+
+    cursor:pointer;
+
+}
+
+.team-card:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.team-name{
+
+    text-align:center;
+
+    font-size:18px;
+
+    color:var(--text2);
+
+    min-height:44px;
+
+}
+
+.team-score{
+
+    text-align:center;
+
+    font-size:46px;
+
+    font-weight:bold;
+
+    margin-top:8px;
+
+    color:white;
+
+}
+
+.team-bolts{
+
+    text-align:center;
+
+    margin-top:8px;
+
+    color:#ffd54f;
+
+    font-size:18px;
+
+}
+
+
+
+/* =========================================================
+   INFO
+========================================================= */
+
+.game-info{
+
+    background:var(--panel);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.info-row{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:8px 0;
+
+    font-size:19px;
+
+}
+
+.info-row span:last-child{
+
+    font-weight:bold;
+
+    color:white;
+
+}
+
+
+
+/* =========================================================
+   SCORE INPUT
+========================================================= */
+
+.score-panel{
+
+    display:flex;
+
+    gap:12px;
+
+}
+
+.score-panel input{
+
+    flex:1;
+
+    text-align:center;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+}
+
+
+
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+.save-btn{
+
+    margin-top:8px;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    padding:18px;
+
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+.history-window{
+
+    max-width:900px;
+
+}
+
+
+
+.history-table{
+
+    width:100%;
+
+    overflow:auto;
+
+    margin-top:20px;
+
+}
+
+
+
+.history-table table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+
+
+.history-table th{
+
+    background:var(--panel-light);
+
+    color:white;
+
+    padding:12px;
+
+    font-size:16px;
+
+    position:sticky;
+
+    top:0;
+
+}
+
+
+
+.history-table td{
+
+    padding:12px;
+
+    text-align:center;
+
+    border-bottom:1px solid rgba(255,255,255,.08);
+
+    color:var(--text);
+
+}
+
+
+
+.history-table tr:hover{
+
+    background:rgba(255,255,255,.05);
+
+}
+
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal{
 
     position:fixed;
 
@@ -861,197 +690,434 @@ input:focus{
 
     align-items:center;
 
-    background:#1d2330;
+    background:rgba(0,0,0,.55);
 
-    z-index:5000;
-
-}
-
-.start-window{
-
-    width:min(92%,430px);
-
-    background:#2a3142;
-
-    border-radius:20px;
-
-    padding:28px;
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:18px;
-
-    box-shadow:0 10px 30px rgba(0,0,0,.35);
+    z-index:999;
 
 }
 
-.start-logo{
 
-    text-align:center;
 
-    font-size:30px;
+.modal-window{
 
-    letter-spacing:2px;
+    max-width:430px;
+
+    width:92%;
+
+    animation:popup .18s ease;
 
 }
 
-.start-title{
+
+
+.modal-text{
 
     text-align:center;
 
     font-size:20px;
 
-    font-weight:700;
+    line-height:1.6;
 
-}
+    margin:20px 0;
 
-.mode-btn{
-
-    width:100%;
-
-    padding:15px;
-
-    border:none;
-
-    border-radius:12px;
-
-    font-size:18px;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.mode-btn:hover{
-
-    transform:translateY(-2px);
-
-}
-
-.back-btn{
-
-    align-self:flex-start;
-
-    border:none;
-
-    background:none;
-
-    color:#ffffff;
-
-    font-size:17px;
-
-    cursor:pointer;
-
-    padding:4px 0;
-
-}
-
-.player-row{
-
-    display:flex;
-
-}
-
-.player-row.hidden{
-
-    display:none;
-
-}
-
-.players-form{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-
-}
-
-.players-form input{
-
-    width:100%;
-
-    padding:12px 14px;
-
-    border-radius:10px;
-
-    border:none;
-
-    outline:none;
-
-    font-size:16px;
+    white-space:pre-line;
 
 }
 
 
 
 /* =========================================================
-   PLAYER LIST
+   CONFIRM BUTTONS
 ========================================================= */
 
-.player-row{
+.confirm-buttons{
 
-    position:relative;
+    display:flex;
 
-}
+    gap:12px;
 
-.player-input{
-
-    width:100%;
+    margin-top:20px;
 
 }
 
-.player-list{
 
-    position:absolute;
 
-    top:100%;
+.confirm-buttons .mode-btn{
 
-    left:0;
-
-    right:0;
-
-    background:#2b3346;
-
-    border-radius:10px;
-
-    overflow:hidden;
-
-    margin-top:4px;
-
-    z-index:100;
-
-    box-shadow:0 6px 18px rgba(0,0,0,.35);
+    flex:1;
 
 }
 
-.player-item{
 
-    padding:12px;
 
-    cursor:pointer;
+/* =========================================================
+   LOADING
+========================================================= */
 
-    transition:.15s;
+.loading-screen{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(29,35,48,.96);
+
+    z-index:1200;
+
+}
+
+
+
+.loading-box{
+
+    text-align:center;
 
 }
 
-.player-item:hover{
 
-    background:#3d4863;
+
+.loading-spinner{
+
+    width:60px;
+
+    height:60px;
+
+    margin:0 auto 20px;
+
+    border-radius:50%;
+
+    border:5px solid rgba(255,255,255,.2);
+
+    border-top-color:var(--accent);
+
+    animation:spin 1s linear infinite;
 
 }
 
-.player-list.hidden{
 
-    display:none;
+
+.loading-text{
+
+    font-size:22px;
+
+    color:white;
 
 }
+
+
+
+/* =========================================================
+   OVERLAY
+========================================================= */
+
+.overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.35);
+
+    z-index:500;
+
+}
+
+
+
+/* =========================================================
+   ANIMATION LAYER
+========================================================= */
+
+#animationLayer{
+
+    position:fixed;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:1500;
+
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes popup{
+
+    from{
+
+        opacity:0;
+
+        transform:scale(.92);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:scale(1);
+
+    }
+
+}
+
+
+
+@keyframes spin{
+
+    from{
+
+        transform:rotate(0deg);
+
+    }
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
+}
+
+
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(12px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+
+    }
+
+}
+
+
+
+/* =========================================================
+   BUTTON EFFECTS
+========================================================= */
+
+.mode-btn,
+.save-btn,
+.team-card{
+
+    transition:
+
+        transform .18s,
+
+        box-shadow .18s,
+
+        background .18s;
+
+}
+
+
+
+.mode-btn:active,
+.save-btn:active{
+
+    transform:scale(.97);
+
+}
+
+
+
+.team-card:active{
+
+    transform:scale(.985);
+
+}
+
+
+
+.save-btn:hover{
+
+    box-shadow:
+
+        0 0 18px rgba(76,175,80,.35);
+
+}
+
+
+
+.mode-btn:hover{
+
+    box-shadow:
+
+        0 0 18px rgba(255,152,0,.35);
+
+}
+
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width:900px){
+
+    .game-screen{
+
+        max-width:100%;
+
+        padding:16px;
+
+    }
+
+}
+
+
+
+@media (max-width:700px){
+
+    .teams-wrap{
+
+        flex-direction:column;
+
+    }
+
+
+
+    .score-panel{
+
+        flex-direction:column;
+
+    }
+
+
+
+    .team-score{
+
+        font-size:42px;
+
+    }
+
+
+
+    .info-row{
+
+        font-size:18px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   iPad
+========================================================= */
+
+@media (min-width:768px){
+
+    .start-window{
+
+        max-width:560px;
+
+    }
+
+
+
+    .mode-btn{
+
+        font-size:20px;
+
+    }
+
+
+
+    .player-input{
+
+        font-size:20px;
+
+    }
+
+
+
+    .team-score{
+
+        font-size:52px;
+
+    }
+
+}
+
+
+
+/* =========================================================
+   SMALL DETAILS
+========================================================= */
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button{
+
+    -webkit-appearance:none;
+
+    margin:0;
+
+}
+
+
+
+input[type=number]{
+
+    appearance:textfield;
+
+}
+
+
+
+table{
+
+    user-select:none;
+
+}
+
+
+
+button{
+
+    user-select:none;
+
+}
+
+
+
+.logo{
+
+    animation:fadeUp .35s ease;
+
+}
+
+
+
+.start-window,
+
+.history-window,
+
+.modal-window,
+
+.team-card,
+
+.game-info{
+
+    animation:fadeUp .25s ease;
+}
+
+
 
 
 

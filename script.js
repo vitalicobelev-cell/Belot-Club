@@ -206,6 +206,7 @@ function getSaveKey(){
 
 
 
+
 /* ==========================================================
 
    BELOT CLUB
@@ -328,7 +329,7 @@ function clearRegisterInputs(){
 
 ==========================================================*/
 
-function setupPlayerFields(){
+function setupPlayerFields(count){
 
     playerRows.forEach(row=>{
 
@@ -340,7 +341,7 @@ function setupPlayerFields(){
 
     });
 
-    if(selectedMode===2){
+    if(count===2){
 
         playerRows[2].classList.add(
 
@@ -356,7 +357,7 @@ function setupPlayerFields(){
 
     }
 
-    if(selectedMode===3){
+    if(count===3){
 
         playerRows[3].classList.add(
 
@@ -435,9 +436,6 @@ newGameBtn.onclick=()=>{
     openRegister();
 
 };
-
-
-
 
 
 
@@ -647,30 +645,28 @@ function createNewGame(){
 
     App.declarations=[];
 
-App.timer = 0;
+    App.timer = 0;
 
 
 
-startTimer();
+    startTimer();
    
 
-   renderPlayers();
+    renderPlayers();
 
-renderTeams();
+    renderTeams();
 
-updateDealer();
+    updateDealer();
 
-updateDealCounter();
+    updateDealCounter();
 
-updateGameValue();
+    updateGameValue();
 
-renderTimer();
+    renderTimer();
 
-openGame();
     openGame();
 
 }
-
 
 
 
@@ -891,7 +887,6 @@ function resetScores(){
     });
 
 }
-
 
 
 
@@ -1196,7 +1191,7 @@ function saveDeal(){
 
 
     /* ======================================
-       НЕПРАВИЛЬНАЯ РАЗДАЧА
+       НЕПРАВИЛЬНАЯ РАЗД��ЧА
     ====================================== */
 
     if(enemy===0 && player===0){
@@ -1908,24 +1903,6 @@ closeHistory.onclick=()=>{
 
 
 
-
 hidePlayerLists();
 
 renderTimer();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

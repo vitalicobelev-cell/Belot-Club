@@ -59,6 +59,19 @@ document.getElementById("startScreen");
 const continueScreen =
 document.getElementById("continueScreen");
 
+const startGameBtn =
+
+document.getElementById("startGame");
+
+const saveButton =
+
+document.getElementById("saveButton");
+
+const closeHistory =
+
+document.getElementById("closeHistory");
+
+
 const registerScreen =
 document.getElementById("registerScreen");
 
@@ -283,21 +296,31 @@ function checkSavedGame(){
 
 function openRegister(){
 
-    continueScreen.classList.add(
+    continueScreen.classList.add("hidden");
 
-        "hidden"
+    startScreen.classList.add("hidden");
 
-    );
+    registerScreen.classList.remove("hidden");
 
-    registerScreen.classList.remove(
+    setupPlayerFields(selectedMode);
 
-        "hidden"
-
-    );
-
-    setupPlayerFields();
+    clearRegisterInputs();
 
 }
+
+
+function clearRegisterInputs(){
+
+    document
+    .querySelectorAll(".player-input")
+    .forEach(input=>{
+
+        input.value="";
+
+    });
+
+}
+
 
 /* ==========================================================
 
@@ -626,11 +649,24 @@ function createNewGame(){
 
 App.timer = 0;
 
-createTeams();
+
 
 startTimer();
    
 
+   renderPlayers();
+
+renderTeams();
+
+updateDealer();
+
+updateDealCounter();
+
+updateGameValue();
+
+renderTimer();
+
+openGame();
     openGame();
 
 }
@@ -907,6 +943,9 @@ function openGame(){
 ==========================================================*/
 
 function loadSavedGame(){
+   continueScreen.classList.add("hidden");
+
+gameScreen.classList.remove("hidden");
 
     const save = localStorage.getItem(
 
@@ -1839,6 +1878,36 @@ function renderTimer(){
 /* ==========================================================
    INIT
 ==========================================================*/
+
+
+continueBtn.onclick =
+loadSavedGame;
+
+newGameBtn.onclick =
+openRegister;
+
+startGameBtn.onclick =
+createNewGame;
+
+saveButton.onclick=()=>{
+
+    normalizeScore();
+
+    saveDeal();
+
+};
+
+closeHistory.onclick=()=>{
+
+    historyScreen.classList.add("hidden");
+
+    gameScreen.classList.remove("hidden");
+
+};
+
+
+
+
 
 hidePlayerLists();
 

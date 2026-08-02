@@ -67,24 +67,120 @@ document
 
 
 /* ==========================================================
-   SAVE CHECK
+   PLAYER ROWS
+========================================================== */
+
+const rowPlayer1 =
+    document.getElementById("rowPlayer1");
+
+const rowPlayer2 =
+    document.getElementById("rowPlayer2");
+
+const rowPlayer3 =
+    document.getElementById("rowPlayer3");
+
+const rowPlayer4 =
+    document.getElementById("rowPlayer4");
+
+
+
+/* ==========================================================
+   BACK BUTTONS
+========================================================== */
+
+const backToModes =
+    document.getElementById("backToModes");
+
+const backToContinue =
+    document.getElementById("backToContinue");
+
+
+
+backToModes.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        continueScreen.classList.add("hidden");
+
+        startScreen.classList.remove("hidden");
+
+    }
+
+);
+
+
+
+backToContinue.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        registerScreen.classList.add("hidden");
+
+        startScreen.classList.remove("hidden");
+
+    }
+
+);
+
+
+
+/* ==========================================================
+   PLAYER COUNT
+========================================================== */
+
+function setupPlayerFields(mode){
+
+    rowPlayer1.classList.remove("hidden");
+
+    rowPlayer2.classList.remove("hidden");
+
+    rowPlayer3.classList.remove("hidden");
+
+    rowPlayer4.classList.remove("hidden");
+
+
+
+    if(mode===2){
+
+        rowPlayer3.classList.add("hidden");
+
+        rowPlayer4.classList.add("hidden");
+
+    }
+
+
+
+    if(mode===3){
+
+        rowPlayer4.classList.add("hidden");
+
+    }
+
+}
+
+
+
+/* ==========================================================
+   CHECK SAVE
 ========================================================== */
 
 function checkSavedGame(){
-
-    startScreen.classList.add("hidden");
-
-
 
     const saveName =
 
         "belot_save_" + selectedMode;
 
-
-
     const save =
 
         localStorage.getItem(saveName);
+
+
+
+    startScreen.classList.add("hidden");
 
 
 
@@ -101,6 +197,9 @@ function checkSavedGame(){
     }
 
 }
+
+
+
 
 /* ==========================================================
    SAVE NORMAL DEAL
@@ -263,35 +362,46 @@ const continueBtn =
 const restartBtn =
     document.getElementById("restartBtn");
 
+/* ==========================================================
+   CONTINUE GAME
+========================================================== */
 
+continueBtn.onclick = function(){
 
-continueBtn.addEventListener(
+    continueScreen.classList.add("hidden");
 
-    "click",
+    loadSavedGame();
 
-    ()=>{
-
-        loadSavedGame();
-
-    }
-
-);
+};
 
 
 
-restartBtn.addEventListener(
+/* ==========================================================
+   NEW GAME
+========================================================== */
 
-    "click",
+restartBtn.onclick = function(){
 
-    ()=>{
+    const saveName =
 
-        continueScreen.classList.add("hidden");
+        "belot_save_" + selectedMode;
 
-        openRegister();
+    localStorage.removeItem(saveName);
 
-    }
 
-);
+
+    continueScreen.classList.add("hidden");
+
+
+
+    openRegister();
+
+};
+
+
+
+
+
 
 
 
@@ -305,6 +415,8 @@ function openRegister(){
 
     registerScreen.classList.remove("hidden");
 
+   setupPlayerFields(selectedMode);
+
 }
 
 
@@ -314,6 +426,7 @@ function openRegister(){
 ========================================================== */
 
 function loadSavedGame(){
+   
 
     const saveName =
 
@@ -379,6 +492,34 @@ const player4 =
 
 
 
+/* ==========================================================
+   PLAYER DATABASE
+========================================================== */
+
+let playersDB =
+
+    JSON.parse(
+
+        localStorage.getItem("belot_players")
+
+    ) || [];
+
+
+
+function savePlayersDB(){
+
+    localStorage.setItem(
+
+        "belot_players",
+
+        JSON.stringify(playersDB)
+
+    );
+
+}
+
+
+
 startGameBtn.addEventListener(
 
     "click",
@@ -430,6 +571,26 @@ function createNewGame(){
     }
 
 
+   /* ---------- Сохраняем новых игроков ---------- */
+
+names.forEach(name=>{
+
+    if(
+
+        name!=="" &&
+
+        !playersDB.includes(name)
+
+    ){
+
+        playersDB.push(name);
+
+    }
+
+});
+
+savePlayersDB();
+   
 
     App.mode = selectedMode;
 

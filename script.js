@@ -528,6 +528,160 @@ startGameBtn.addEventListener(
 
 );
 
+/* ==========================================================
+   PLAYER LISTS
+========================================================== */
+
+const playerInputs = [
+
+    player1,
+
+    player2,
+
+    player3,
+
+    player4
+
+];
+
+const playerLists = [
+
+    document.getElementById("player1List"),
+
+    document.getElementById("player2List"),
+
+    document.getElementById("player3List"),
+
+    document.getElementById("player4List")
+
+];
+
+
+
+/* ==========================================================
+   BUILD LIST
+========================================================== */
+
+function buildPlayerLists(){
+
+    playerLists.forEach((list,index)=>{
+
+        list.innerHTML="";
+
+
+
+        playersDB.forEach(name=>{
+
+            const item=document.createElement("div");
+
+            item.className="player-item";
+
+            item.textContent=name;
+
+
+
+            item.onclick=()=>{
+
+                playerInputs[index].value=name;
+
+                hidePlayerLists();
+
+            };
+
+
+
+            list.appendChild(item);
+
+        });
+
+
+
+        const add=document.createElement("div");
+
+        add.className="player-item";
+
+        add.textContent="+ Новый игрок";
+
+
+
+        add.onclick=()=>{
+
+            hidePlayerLists();
+
+            playerInputs[index].focus();
+
+        };
+
+
+
+        list.appendChild(add);
+
+    });
+
+}
+
+
+/* ==========================================================
+   SHOW LIST
+========================================================== */
+
+function hidePlayerLists(){
+
+    playerLists.forEach(list=>{
+
+        list.classList.add("hidden");
+
+    });
+
+}
+
+
+
+playerInputs.forEach((input,index)=>{
+
+    input.addEventListener(
+
+        "focus",
+
+        ()=>{
+
+            hidePlayerLists();
+
+            buildPlayerLists();
+
+            playerLists[index].classList.remove("hidden");
+
+        }
+
+    );
+
+});
+
+/* ==========================================================
+   CLOSE LIST
+========================================================== */
+
+document.addEventListener(
+
+    "click",
+
+    e=>{
+
+        if(
+
+            !e.target.classList.contains("player-input") &&
+
+            !e.target.classList.contains("player-item")
+
+        ){
+
+            hidePlayerLists();
+
+        }
+
+    }
+
+);
 
 
 /* ==========================================================

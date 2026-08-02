@@ -991,3 +991,69 @@ input:focus{
 
 
 
+/* =========================================================
+   PLAYER LIST
+========================================================= */
+
+.player-row{
+
+    position:relative;
+
+}
+
+.player-input{
+
+    width:100%;
+
+}
+
+.player-list{
+
+    position:absolute;
+
+    top:100%;
+
+    left:0;
+
+    right:0;
+
+    background:#2b3346;
+
+    border-radius:10px;
+
+    overflow:hidden;
+
+    margin-top:4px;
+
+    z-index:100;
+
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+
+}
+
+.player-item{
+
+    padding:12px;
+
+    cursor:pointer;
+
+    transition:.15s;
+
+}
+
+.player-item:hover{
+
+    background:#3d4863;
+
+}
+
+.player-list.hidden{
+
+    display:none;
+
+}
+
+
+
+
+

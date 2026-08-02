@@ -21,51 +21,34 @@
 <!-- ======================================
      START SCREEN
 ====================================== -->
-
 <div id="startScreen" class="start-screen">
 
     <div class="start-window">
 
         <h1 class="start-logo">
-
             ♠ BELOT CLUB ♣
-
         </h1>
 
         <div class="start-title">
-
             Выберите режим
-
         </div>
 
-        <div class="mode-list">
+        <button class="mode-btn" data-mode="2">
+            2 игрока
+        </button>
 
-            <button
-                id="mode2"
-                class="mode-btn"
-                data-mode="2">
+        <button class="mode-btn" data-mode="3">
+            3 игрока
+        </button>
 
-                2 игрока
+        <button class="mode-btn" data-mode="4">
+            4 игрока
+        </button>
 
-            </button>
+    </div>
 
-            <button
-                id="mode3"
-                class="mode-btn"
-                data-mode="3">
+</div>
 
-                3 игрока
-
-            </button>
-
-            <button
-                id="mode4"
-                class="mode-btn"
-                data-mode="4">
-
-                4 игрока
-
-            </button>
 
         </div>
 
@@ -84,7 +67,9 @@
     class="start-screen hidden">
 
     <div class="start-window">
-
+<button id="backToModes" class="back-btn">
+    ← Назад
+</button>
         <h2 class="start-title">
 
             Найдена сохраненная партия
@@ -121,7 +106,9 @@
     class="start-screen hidden">
 
     <div class="start-window">
-
+<button id="backToContinue" class="back-btn">
+    ← Назад
+</button>
         <h2 class="start-title">
 
             Регистрация игроков
@@ -132,30 +119,21 @@
             id="playersForm"
             class="players-form">
 
-            <input
-                id="player1"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №1">
+           <div id="rowPlayer1" class="player-row">
+    <input id="player1" type="text" placeholder="Игрок №1">
+</div>
 
-            <input
-                id="player2"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №2">
+<div id="rowPlayer2" class="player-row">
+    <input id="player2" type="text" placeholder="Игрок №2">
+</div>
 
-            <input
-                id="player3"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №3">
+<div id="rowPlayer3" class="player-row">
+    <input id="player3" type="text" placeholder="Игрок №3">
+</div>
 
-            <input
-                id="player4"
-                type="text"
-                maxlength="20"
-                placeholder="Игрок №4">
-
+<div id="rowPlayer4" class="player-row">
+    <input id="player4" type="text" placeholder="Игрок №4">
+</div>
         </div>
 
         <button

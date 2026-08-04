@@ -58,7 +58,9 @@ const gameState = {
 
     },
 
-    history:[]
+    history:[],
+   savedAnnouncements:[],
+tempAnnouncements:[]
 
 };
 
@@ -283,6 +285,8 @@ function startTimer(){
         updateTimer();
 
     },1000);
+   gameTimer.classList.remove("timer-paused");
+gameTimer.classList.add("timer-running");
 
 }
 
@@ -291,8 +295,11 @@ function stopTimer(){
     clearInterval(gameState.timerInterval);
 
     gameState.timerRunning=false;
+   gameTimer.classList.remove("timer-running");
+gameTimer.classList.add("timer-paused");
 
 }
+
 
 function toggleTimer(){
 
@@ -300,15 +307,23 @@ function toggleTimer(){
 
         stopTimer();
 
+        gameTimer.classList.remove("timer-running");
+        gameTimer.classList.add("timer-paused");
+
     }
 
     else{
 
         startTimer();
 
+        gameTimer.classList.remove("timer-paused");
+        gameTimer.classList.add("timer-running");
+
     }
 
 }
+
+
 
 function updateTimer(){
 
@@ -637,10 +652,35 @@ activePlayerSelect.addEventListener("change",()=>{
 
 function openAnnouncements(){
 
+    gameState.tempAnnouncements=
+        JSON.parse(
+            JSON.stringify(
+                gameState.savedAnnouncements
+            )
+        );
+
+    renderAnnouncementWindow();
+
     document
-    .getElementById("announcementModal")
-    .classList
-    .add("active");
+        .getElementById("announcementModal")
+        .classList
+        .add("active");
+
+}
+
+function cancelAnnouncements(){
+
+    gameState.tempAnnouncements=
+        JSON.parse(
+            JSON.stringify(
+                gameState.savedAnnouncements
+            )
+        );
+
+    document
+        .getElementById("announcementModal")
+        .classList
+        .remove("active");
 
 }
 
@@ -655,9 +695,51 @@ function closeAnnouncements(){
 
 function applyAnnouncements(){
 
+    gameState.savedAnnouncements=
+        JSON.parse(
+            JSON.stringify(
+                gameState.tempAnnouncements
+            )
+        );
+
+    recalculateAnnouncements();
+
     updateGameValue();
 
-    closeAnnouncements();
+    document
+        .getElementById("announcementModal")
+        .classList
+        .remove("active");
+
+}
+
+
+/* ==========================================================
+   RECALCULATE ANNOUNCEMENTS
+========================================================== */
+
+function recalculateAnnouncements(){
+
+    let totalPoints = 0;
+
+    gameState.savedAnnouncements.forEach(item=>{
+
+        if(item.bela){
+
+            return;
+        }
+
+        totalPoints += item.points * item.count;
+
+    });
+
+    gameState.announcementPoints = totalPoints;
+
+    gameState.gameValue =
+        gameState.baseGameValue +
+        totalPoints;
+
+    updateGameValue();
 
 }
 
@@ -739,14 +821,73 @@ function saveRound(){
         return;
     }
 
-    if(
-        playerPoints + opponentPoints !== gameState.gameValue
-    ){
-        alert(
-            `Сумма должна быть ${gameState.gameValue}.`
-        );
-        return;
-    }
+
+/* ==========================================
+   Проверка неправильной раздачи
+========================================== */
+
+if(
+
+    playerPoints===0 &&
+    opponentPoints===0
+
+){
+
+    processRound(
+
+        0,
+        0
+
+    );
+
+    return;
+
+}
+
+/* ==========================================
+   Играющий не может иметь 0
+========================================== */
+
+if(
+
+    playerPoints===0 &&
+    opponentPoints>0
+
+){
+
+    alert(
+
+"Играющий не может набрать 0 очков.\nМинимум — 2."
+
+    );
+
+    return;
+
+}
+
+/* ==========================================
+   Проверка суммы
+========================================== */
+
+if(
+
+    playerPoints + opponentPoints !== gameState.gameValue
+
+){
+
+    alert(
+
+`Сумма очков должна быть ${gameState.gameValue}.`
+
+    );
+
+    return;
+
+}
+
+
+
+   
 
     processRound(
         playerPoints,
@@ -1479,109 +1620,172 @@ const announcements=[
 
 ];
 
+/* ==========================================================
+   BUILD ANNOUNCEMENTS
+========================================================== */
+
 function buildAnnouncements(){
 
-    const list=
-    document.getElementById("announcementList");
-
-    list.innerHTML="";
+    gameState.savedAnnouncements=[];
 
     announcements.forEach(item=>{
 
-        const row=document.createElement("div");
+        gameState.savedAnnouncements.push({
 
+            name:item.name,
+
+            points:item.points,
+
+            bela:item.bela || false,
+
+            multiple:item.multiple,
+
+            count:0
+
+        });
+
+    });
+
+    renderAnnouncementWindow();
+
+}
+
+/* ==========================================================
+   RENDER ANNOUNCEMENT WINDOW
+========================================================== */
+
+function renderAnnouncementWindow(){
+
+    const list=document.getElementById("announcementList");
+
+    list.innerHTML="";
+
+    gameState.tempAnnouncements.forEach((item,index)=>{
+
+        const row=document.createElement("div");
         row.className="announcementRow";
 
         const title=document.createElement("div");
-
         title.className="announcementTitle";
 
         title.textContent=
-        `${item.name} (+${item.points})`;
+            `${item.name} (+${item.points})`;
 
         const counter=document.createElement("div");
-
         counter.className="announcementCounter";
 
         const minus=document.createElement("button");
-
         minus.className="counterButton";
-
         minus.textContent="−";
 
         const value=document.createElement("span");
-
         value.className="counterValue";
-
-        value.textContent="0";
+        value.textContent=item.count;
 
         const plus=document.createElement("button");
-
         plus.className="counterButton";
-
         plus.textContent="+";
 
-        let count=0;
+        plus.onclick=()=>{
 
-        plus.addEventListener("click",()=>{
+            if(
+                !item.multiple &&
+                item.count>=1
+            ){
+                return;
+            }
 
-            if(!item.multiple && count===1){
+            item.count++;
+
+            value.textContent=item.count;
+
+            updateAnnouncementPreview();
+
+        };
+
+        minus.onclick=()=>{
+
+            if(item.count===0){
 
                 return;
 
             }
 
-            count++;
+            item.count--;
 
-            value.textContent=count;
+            value.textContent=item.count;
 
-            if(!item.bela){
+            updateAnnouncementPreview();
 
-                gameState.announcementPoints+=item.points;
-
-            }
-
-            updateGameValue();
-
-        });
-
-        minus.addEventListener("click",()=>{
-
-            if(count===0){
-
-                return;
-
-            }
-
-            count--;
-
-            value.textContent=count;
-
-            if(!item.bela){
-
-                gameState.announcementPoints-=item.points;
-
-            }
-
-            updateGameValue();
-
-        });
+        };
 
         counter.appendChild(minus);
-
         counter.appendChild(value);
-
         counter.appendChild(plus);
 
         row.appendChild(title);
-
         row.appendChild(counter);
 
         list.appendChild(row);
 
     });
 
+    updateAnnouncementPreview();
+
 }
+
+
+
+
+/* ==========================================================
+   ANNOUNCEMENT PREVIEW
+========================================================== */
+
+function updateAnnouncementPreview(){
+
+    let totalAnnouncements = 0;
+    let gameBonus = 0;
+
+    gameState.tempAnnouncements.forEach(item=>{
+
+        totalAnnouncements += item.count;
+
+        // Бэла не увеличивает стоимость игры
+        if(item.bela){
+            return;
+        }
+
+        gameBonus += item.points * item.count;
+
+    });
+
+    // Стоимость игры только для просмотра
+    const previewGameValue =
+        gameState.baseGameValue + gameBonus;
+
+    // Если есть элементы в модальном окне
+    const previewGame =
+        document.getElementById("announcementTempGame");
+
+    const previewCount =
+        document.getElementById("announcementTempCount");
+
+    if(previewGame){
+
+        previewGame.textContent = previewGameValue;
+
+    }
+
+    if(previewCount){
+
+        previewCount.textContent =
+            `📣 (+${gameBonus})`;
+
+    }
+
+}
+
+
 
 /* ==========================================================
    START

@@ -454,131 +454,87 @@
     </div>
 
     <!-- Игроки -->
+<div class="team-card" id="players3Card">
 
-    <section id="playersScoreContainer">
+    <div class="player3-row">
 
-        <article
-            class="singlePlayerCard"
-            onclick="openHistory()">
+        <span id="player3Name1">Игрок 1</span>
 
-            <div
-                id="playerOneName"
-                class="singlePlayerName">
+        <span id="player3Score1">0</span>
 
-                Игрок 1
+        <span id="player3Bolts1" class="bolts"></span>
 
-            </div>
+    </div>
 
-            <div class="singlePlayerBottom">
+    <div class="player3-row">
 
-                <div
-                    id="playerOneScore"
-                    class="singlePlayerScore">
+        <span id="player3Name2">Игрок 2</span>
 
-                    0
+        <span id="player3Score2">0</span>
 
-                </div>
+        <span id="player3Bolts2" class="bolts"></span>
 
-                <div
-                    id="playerOneBolts"
-                    class="singlePlayerBolts">
+    </div>
 
-                    ⚡0
+    <div class="player3-row">
 
-                </div>
+        <span id="player3Name3">Игрок 3</span>
 
-            </div>
+        <span id="player3Score3">0</span>
 
-        </article>
+        <span id="player3Bolts3" class="bolts"></span>
 
-        <article
-            class="singlePlayerCard"
-            onclick="openHistory()">
+    </div>
 
-            <div
-                id="playerTwoName"
-                class="singlePlayerName">
-
-                Игрок 2
-
-            </div>
-
-            <div class="singlePlayerBottom">
-
-                <div
-                    id="playerTwoScore"
-                    class="singlePlayerScore">
-
-                    0
-
-                </div>
-
-                <div
-                    id="playerTwoBolts"
-                    class="singlePlayerBolts">
-
-                    ⚡0
-
-                </div>
-
-            </div>
-
-        </article>
-
-        <article
-            class="singlePlayerCard"
-            onclick="openHistory()">
-
-            <div
-                id="playerThreeName"
-                class="singlePlayerName">
-
-                Игрок 3
-
-            </div>
-
-            <div class="singlePlayerBottom">
-
-                <div
-                    id="playerThreeScore"
-                    class="singlePlayerScore">
-
-                    0
-
-                </div>
-
-                <div
-                    id="playerThreeBolts"
-                    class="singlePlayerBolts">
-
-                    ⚡0
-
-                </div>
-
-            </div>
-
-        </article>
-
-    </section>
+</div>
+    
 
     <!-- Раздающий -->
 
-    <section class="dealerBlock">
+    <div class="score-row">
 
-        <span>
+    <label id="playerLabel1">
 
-            🃏 Раздаёт
+        Игрок 1
 
-        </span>
+    </label>
 
-        <span id="dealerName3">
+    <input
+        id="playerInput1"
+        type="number"
+    >
 
-            —
+</div>
 
-        </span>
+<div class="score-row">
 
-    </section>
+    <label id="playerLabel2">
 
+        Игрок 2
+
+    </label>
+
+    <input
+        id="playerInput2"
+        type="number"
+    >
+
+</div>
+
+<div class="score-row">
+
+    <label id="playerLabel3">
+
+        Игрок 3
+
+    </label>
+
+    <input
+        id="playerInput3"
+        type="number"
+    >
+
+</div>
     <!-- Играющий -->
 
     <section class="playerBlock">
@@ -803,6 +759,19 @@
 
         </div>
 
+<div class="announcementPreview">
+
+    <span id="announcementTempCount">
+        📣 (+0)
+    </span>
+
+    <span id="announcementTempGame">
+        16
+    </span>
+
+</div>
+
+        
         <div class="announcementResult">
 
             <div id="announcementTotal">

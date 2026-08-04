@@ -2,1186 +2,812 @@
    BELOT CLUB
    Version 1.1
    Author: Vitaliy K.
-   Logic: ChatGPT + Vitaliy
 ========================================================== */
 
 /* ==========================================================
-   1. CONSTANTS
+   RESET
 ========================================================== */
 
-const PLAYERS_DB_KEY = "belot_players";
-const SAVE_GAME_KEY  = "belot_save";
-
-/* ==========================================================
-   2. GAME STATE
-========================================================== */
-
-const gameState = {
-    mode: 0,                    // 3 или 4
-    players: [],
-    dealerIndex: 0,
-    activePlayerIndex: 0,
-    round: 1,
-
-    timerSeconds: 0,
-    timerRunning: false,
-    timerInterval: null,
-
-    baseGameValue: 16,
-    announcementPoints: 0,      // очки объявлений (без бэлы)
-    gameValue: 16,              // base + announcementPoints
-
-    team1: {
-        score: 0,
-        bolts: 0
-    },
-    team2: {
-        score: 0,
-        bolts: 0
-    },
-
-    history: [],
-    savedAnnouncements: [],     // текущие объявления раунда
-    tempAnnouncements: []       // временные в модалке
-};
-
-/* ==========================================================
-   3. PLAYERS DATABASE
-========================================================== */
-
-let playersDB = JSON.parse(localStorage.getItem(PLAYERS_DB_KEY)) || [];
-
-/* ==========================================================
-   4. DOM REFERENCES
-========================================================== */
-
-const screens          = document.querySelectorAll(".screen");
-
-const menuScreen       = document.getElementById("menuScreen");
-const modeScreen       = document.getElementById("modeScreen");
-const playersScreen    = document.getElementById("playersScreen");
-const historyScreen    = document.getElementById("historyScreen");
-const victoryScreen    = document.getElementById("victoryScreen");
-
-const gameScreen4      = document.getElementById("gameScreen4");
-const gameScreen3      = document.getElementById("gameScreen3");
-
-const playersContainer = document.getElementById("playersContainer");
-
-const roundNumber      = document.getElementById("roundNumber");
-const gameTimer        = document.getElementById("gameTimer");
-
-const team1Players     = document.getElementById("team1Players");
-const team2Players     = document.getElementById("team2Players");
-
-const team1Score       = document.getElementById("team1Score");
-const team2Score       = document.getElementById("team2Score");
-
-const team1Bolts       = document.getElementById("team1Bolts");
-const team2Bolts       = document.getElementById("team2Bolts");
-
-const dealerName       = document.getElementById("dealerName");
-const activePlayerSelect = document.getElementById("activePlayerSelect");
-
-const gameValueEl      = document.getElementById("gameValue");
-const announcementButton = document.getElementById("announcementButton");
-
-const opponentScoreInput = document.getElementById("opponentScoreInput");
-const playerScoreInput   = document.getElementById("playerScoreInput");
-
-const historyBody      = document.getElementById("historyBody");
-
-/* ==========================================================
-   5. STORAGE
-========================================================== */
-
-function savePlayersDatabase() {
-    localStorage.setItem(PLAYERS_DB_KEY, JSON.stringify(playersDB));
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-function saveGame() {
-    localStorage.setItem(SAVE_GAME_KEY, JSON.stringify(gameState));
-
-    const continueBtn = document.getElementById("continueGameButton");
-    if (continueBtn) continueBtn.disabled = false;
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
 }
 
-function loadGame() {
-    const save = localStorage.getItem(SAVE_GAME_KEY);
-    if (!save) return false;
-
-    const data = JSON.parse(save);
-    Object.assign(gameState, data);
-    return true;
-}
-
-function deleteSave() {
-    localStorage.removeItem(SAVE_GAME_KEY);
-
-    const continueBtn = document.getElementById("continueGameButton");
-    if (continueBtn) continueBtn.disabled = true;
+body {
+    background: #0d2342;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
 }
 
 /* ==========================================================
-   6. SCREENS
+   SCREEN
 ========================================================== */
 
-function showScreen(screen) {
-    screens.forEach(s => s.classList.remove("active"));
-    screen.classList.add("active");
+.screen {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 14px 16px 20px;
+    flex-direction: column;
+    animation: fade 0.22s ease;
+}
+
+.screen.active {
+    display: flex;
+}
+
+@keyframes fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ==========================================================
-   7. MENU
+   LOGO & TITLES
 ========================================================== */
 
-function startGame() {
-    showScreen(modeScreen);
+.menuLogo {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ffd54d;
+    letter-spacing: 1.5px;
+    margin: 40px 0 36px;
+    user-select: none;
 }
 
-function backToMenu() {
-    stopTimer();
-    showScreen(menuScreen);
+.menuLogo span {
+    color: #ffffff;
 }
 
-function continueGame() {
-    if (!loadGame()) {
-        alert("Нет сохранённой игры.");
-        return;
-    }
-
-    buildActivePlayerList();
-    updateDealer();
-    updateGameValue();
-    renderGame();
-    startTimer();
-
-    if (gameState.mode === 4) {
-        showScreen(gameScreen4);
-    } else {
-        showScreen(gameScreen3);
-    }
+.gameLogo {
+    flex: 1;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffd54d;
+    letter-spacing: 1px;
 }
 
-function openGameMenu() {
-    document.getElementById("gameMenuModal").classList.add("active");
-}
-
-function closeGameMenu() {
-    document.getElementById("gameMenuModal").classList.remove("active");
-}
-
-function saveAndExit() {
-    saveGame();
-    closeGameMenu();
-    backToMenu();
-}
-
-function exitWithoutSaving() {
-    if (confirm("Выйти без сохранения?")) {
-        deleteSave();
-        closeGameMenu();
-        backToMenu();
-    }
+.screenTitle {
+    text-align: center;
+    margin: 12px 0 22px;
+    font-size: 1.4rem;
+    color: #ffd54d;
 }
 
 /* ==========================================================
-   8. TIMER
+   BUTTONS
 ========================================================== */
 
-function startTimer() {
-    stopTimer(); // на всякий случай очищаем
-
-    gameState.timerRunning = true;
-    gameState.timerInterval = setInterval(() => {
-        gameState.timerSeconds++;
-        updateTimer();
-    }, 1000);
-
-    gameTimer.classList.remove("timer-paused");
-    gameTimer.classList.add("timer-running");
+.primaryButton,
+.secondaryButton,
+.iconButton {
+    border: none;
+    cursor: pointer;
+    transition: 0.18s;
+    font-family: inherit;
 }
 
-function stopTimer() {
-    clearInterval(gameState.timerInterval);
-    gameState.timerRunning = false;
-
-    gameTimer.classList.remove("timer-running");
-    gameTimer.classList.add("timer-paused");
+.primaryButton {
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    background: #1d4ed8;
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-top: 10px;
 }
 
-function toggleTimer() {
-    if (gameState.timerRunning) {
-        stopTimer();
-    } else {
-        startTimer();
-    }
+.primaryButton:active {
+    transform: scale(0.97);
+    background: #1e40af;
 }
 
-function updateTimer() {
-    const min = String(Math.floor(gameState.timerSeconds / 60)).padStart(2, "0");
-    const sec = String(gameState.timerSeconds % 60).padStart(2, "0");
-    gameTimer.textContent = `⏱ ${min}:${sec}`;
+.secondaryButton {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    margin-top: 10px;
+    background: #31455f;
+    color: #fff;
+    font-size: 1rem;
 }
 
-
-/* ==========================================================
-   9. MODE SELECTION
-========================================================== */
-
-function selectMode(mode) {
-    gameState.mode = mode;
-    createPlayersScreen();
-    showScreen(playersScreen);
+.secondaryButton:active {
+    transform: scale(0.97);
+    background: #3d5677;
 }
 
-/* ==========================================================
-   10. PLAYERS SCREEN
-========================================================== */
-
-let currentPickerIndex = null;
-
-
-function createPlayersScreen() {
-    const currentValues = [];
-    for (let i = 0; i < gameState.mode; i++) {
-        const el = document.getElementById(`playerSelect${i}`);
-        currentValues[i] = el ? el.dataset.value || "" : "";
-    }
-
-    playersContainer.innerHTML = "";
-
-    for (let i = 0; i < gameState.mode; i++) {
-        const row = document.createElement("div");
-        row.className = "playerRow";
-
-        // === Поле с именем ===
-        const field = document.createElement("div");
-        field.className = "playerSelect";
-        field.id = `playerSelect${i}`;
-        field.dataset.value = currentValues[i] || "";
-
-        if (currentValues[i]) {
-            field.textContent = currentValues[i];
-            field.style.color = "#ffffff";
-        } else {
-            field.textContent = "Выберите игрока";
-            field.style.color = "#94a3b8";
-        }
-
-        // Клик по полю — открыть список
-        field.addEventListener("click", () => {
-            openPlayerPicker(i);
-        });
-
-        // === Кнопка очистки поля ===
-        const clearBtn = document.createElement("button");
-        clearBtn.className = "removePlayerButton";
-        clearBtn.textContent = "❌";
-        clearBtn.title = "Очистить поле";
-
-        clearBtn.addEventListener("click", (e) => {
-            e.stopPropagation(); // чтобы не открывался список
-
-            field.dataset.value = "";
-            field.textContent = "Выберите игрока";
-            field.style.color = "#94a3b8";
-
-            // Обновляем остальные списки (имя снова становится доступным)
-            createPlayersScreen();
-        });
-
-        row.appendChild(field);
-        row.appendChild(clearBtn);
-        playersContainer.appendChild(row);
-    }
-}
-            
-
-function openPlayerPicker(index) {
-    currentPickerIndex = index;
-    const list = document.getElementById("playerPickerList");
-    if (!list) {
-        alert("Ошибка: не найден playerPickerList");
-        return;
-    }
-    list.innerHTML = "";
-
-    const selectedNames = [];
-    for (let i = 0; i < gameState.mode; i++) {
-        if (i === index) continue;
-        const el = document.getElementById(`playerSelect${i}`);
-        if (el && el.dataset.value) selectedNames.push(el.dataset.value);
-    }
-
-    playersDB.forEach(name => {
-        if (selectedNames.includes(name)) return;
-
-        const row = document.createElement("div");
-        row.className = "pickerRow";
-
-        const nameEl = document.createElement("div");
-        nameEl.className = "pickerName";
-        nameEl.textContent = name;
-        nameEl.addEventListener("click", () => selectPlayer(name));
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "pickerDelete";
-        deleteBtn.textContent = "❌";
-        deleteBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            deletePlayerFromDB(name);
-        });
-
-        row.appendChild(nameEl);
-        row.appendChild(deleteBtn);
-        list.appendChild(row);
-    });
-
-    // Кнопка Новый игрок
-    const newRow = document.createElement("div");
-    newRow.className = "pickerRow newPlayerRow";
-    newRow.innerHTML = `<div class="pickerName">➕ Новый игрок</div>`;
-    newRow.addEventListener("click", () => {
-        const newName = prompt("Имя нового игрока:");
-        if (!newName || !newName.trim()) return;
-        const playerName = newName.trim();
-        if (!playersDB.includes(playerName)) {
-            playersDB.push(playerName);
-            playersDB.sort();
-            savePlayersDatabase();
-        }
-        selectPlayer(playerName);
-    });
-    list.appendChild(newRow);
-
-    document.getElementById("playerPickerModal").classList.add("active");
+.iconButton {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #173457;
+    color: #ffd54d;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-function selectPlayer(name) {
-    const field = document.getElementById(`playerSelect${currentPickerIndex}`);
-    if (!field) return;
-
-    field.dataset.value = name;
-    field.textContent = name;
-    field.style.color = "#ffffff";
-
-    closePlayerPicker();
-    createPlayersScreen();
+.iconButton:active {
+    transform: scale(0.93);
 }
 
-function deletePlayerFromDB(name) {
-    if (!confirm(`Удалить «${name}» из базы?`)) return;
-
-    playersDB = playersDB.filter(p => p !== name);
-    savePlayersDatabase();
-
-    // Очищаем поля, где был этот игрок
-    for (let i = 0; i < gameState.mode; i++) {
-        const el = document.getElementById(`playerSelect${i}`);
-        if (el && el.dataset.value === name) {
-            el.dataset.value = "";
-            el.textContent = "Выберите игрока";
-            el.style.color = "#94a3b8";
-        }
-    }
-
-    openPlayerPicker(currentPickerIndex);
-}
-
-function closePlayerPicker() {
-    const modal = document.getElementById("playerPickerModal");
-    if (modal) modal.classList.remove("active");
-    currentPickerIndex = null;
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
 }
 
 /* ==========================================================
-   11. CONFIRM PLAYERS & START GAME
+   MENU
 ========================================================== */
 
-
-function confirmPlayers() {
-    gameState.players = [];
-
-    for (let i = 0; i < gameState.mode; i++) {
-        const field = document.getElementById(`playerSelect${i}`);
-        
-        // Теперь берём значение из dataset
-        const value = field ? field.dataset.value : "";
-
-        if (!value) {
-            alert("Выберите всех игроков.");
-            return;
-        }
-
-        gameState.players.push(value);
-    }
-
-    // Сброс состояния новой игры
-    gameState.round = 1;
-    gameState.dealerIndex = 0;
-    gameState.activePlayerIndex = 1;
-    gameState.timerSeconds = 0;
-
-    gameState.team1.score = 0;
-    gameState.team2.score = 0;
-    gameState.team1.bolts = 0;
-    gameState.team2.bolts = 0;
-
-    gameState.history = [];
-    gameState.announcementPoints = 0;
-    gameState.baseGameValue = 16;
-    gameState.gameValue = 16;
-
-    resetAnnouncements();
-
-    fillTeams();
-    buildActivePlayerList();
-    updateDealer();
-    updateGameValue();
-    renderGame();
-    startTimer();
-
-    if (gameState.mode === 4) {
-        showScreen(gameScreen4);
-    } else {
-        showScreen(gameScreen3);
-    }
+.menuButtons,
+.modeButtons,
+.playersButtons {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
 }
 
 /* ==========================================================
-   12. TEAMS
+   TOP BAR
 ========================================================== */
 
-function fillTeams() {
-    if (gameState.mode === 4) {
-        team1Players.innerHTML = `${gameState.players[0]}<br>${gameState.players[2]}`;
-        team2Players.innerHTML = `${gameState.players[1]}<br>${gameState.players[3]}`;
-    }
-    // Для режима 3 можно будет доработать позже
+.topBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
 /* ==========================================================
-   13. DEALER
+   ROUND + TIMER
 ========================================================== */
 
-function updateDealer() {
-    dealerName.textContent = gameState.players[gameState.dealerIndex];
+.roundBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding: 0 4px;
+    position: relative;
 }
 
-function nextDealer() {
-    gameState.dealerIndex++;
-    if (gameState.dealerIndex >= gameState.players.length) {
-        gameState.dealerIndex = 0;
-    }
-    updateDealer();
+#roundNumber {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #ffd54d;
+    z-index: 1;
+}
+
+#gameTimer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 10px;
+}
+
+.timer-running {
+    color: #ffffff;
+}
+
+.timer-paused {
+    color: #ff6b6b !important;
 }
 
 /* ==========================================================
-   14. ACTIVE PLAYER
+   TEAMS
 ========================================================== */
 
-function buildActivePlayerList() {
-    activePlayerSelect.innerHTML = "";
-
-    gameState.players.forEach((player, index) => {
-        const option = document.createElement("option");
-        option.value = index;
-        option.textContent = player;
-        activePlayerSelect.appendChild(option);
-    });
-
-    activePlayerSelect.selectedIndex = gameState.activePlayerIndex;
+#teamsContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    background: #16304d;
+    border-radius: 16px;
+    padding: 10px;
+    margin-bottom: 14px;
+    border: 2px solid #264f78;
+    cursor: pointer;
 }
 
-// Слушатель (вешается один раз)
-activePlayerSelect.addEventListener("change", () => {
-    gameState.activePlayerIndex = Number(activePlayerSelect.value);
-});
-
-
-
-/* ==========================================================
-   15. ANNOUNCEMENTS DATA
-========================================================== */
-
-const announcements = [
-    { name: "Тэрц",   points: 2,  multiple: true  },
-    { name: "Бэла",   points: 2,  multiple: false },
-    { name: "50",     points: 4,  multiple: true  },
-    { name: "100",    points: 8,  multiple: true  },
-    { name: "Каре",   points: 10, multiple: true  },
-    { name: "Каре 9", points: 14, multiple: false },
-    { name: "Каре В", points: 20, multiple: false }
-];
-
-  // теперь тоже идёт в стоимость игры
-
-/* ==========================================================
-   16. BUILD / RESET ANNOUNCEMENTS
-========================================================== */
-
-function buildAnnouncements() {
-    gameState.savedAnnouncements = announcements.map(item => ({
-        name: item.name,
-        points: item.points,
-        multiple: item.multiple,
-        count: 0
-    }));
-
-    // Копия для временного редактирования в модалке
-    gameState.tempAnnouncements = JSON.parse(JSON.stringify(gameState.savedAnnouncements));
+.teamCard {
+    background: #1a3a5d;
+    border-radius: 12px;
+    padding: 12px 10px;
 }
 
-function resetAnnouncements() {
-    gameState.savedAnnouncements.forEach(item => item.count = 0);
-    gameState.tempAnnouncements = JSON.parse(JSON.stringify(gameState.savedAnnouncements));
-    gameState.announcementPoints = 0;
-    gameState.gameValue = gameState.baseGameValue;
+.teamCard h3 {
+    text-align: center;
+    color: #ffd54d;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.teamPlayers {
+    min-height: 44px;
+    line-height: 1.5;
+    text-align: center;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.teamBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.teamScore {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.teamBolts {
+    font-size: 1rem;
+    color: #ffd54d;
 }
 
 /* ==========================================================
-   17. OPEN / CLOSE / APPLY ANNOUNCEMENTS
+   INFO ROWS (Раздаёт / Играет) — одна строка
 ========================================================== */
 
-function openAnnouncements() {
-    // Копируем текущие сохранённые в временные
-    gameState.tempAnnouncements = JSON.parse(JSON.stringify(gameState.savedAnnouncements));
-    renderAnnouncementWindow();
-    document.getElementById("announcementModal").classList.add("active");
+.infoRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #16304d;
+    border: 2px solid #264f78;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
 }
 
-function cancelAnnouncements() {
-    // Просто закрываем, изменения не применяем
-    document.getElementById("announcementModal").classList.remove("active");
+.infoLabel {
+    color: #ffd54d;
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
 }
 
-function applyAnnouncements() {
-    // Сохраняем то, что выбрали
-    gameState.savedAnnouncements = JSON.parse(JSON.stringify(gameState.tempAnnouncements));
-    recalculateAnnouncements();
-    updateGameValue();
-    document.getElementById("announcementModal").classList.remove("active");
+.infoValue {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-align: right;
+}
+
+.infoControl {
+    min-width: 140px;
+    max-width: 55%;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 10px;
+    background: #21476d;
+    color: #ffffff;
+    font-size: 1rem;
+    outline: none;
 }
 
 /* ==========================================================
-   18. RECALCULATE + UPDATE GAME VALUE
+   VALUE BAR
 ========================================================== */
 
-function recalculateAnnouncements() {
-    let total = 0;
-
-    gameState.savedAnnouncements.forEach(item => {
-        total += item.points * item.count;
-    });
-
-    gameState.announcementPoints = total;
-    gameState.gameValue = gameState.baseGameValue + total;
+.valueBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    background: #16304d;
+    border: 2px solid #264f78;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
 }
 
-function updateGameValue() {
-    gameState.gameValue = gameState.baseGameValue + gameState.announcementPoints;
+#gameValue {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffd54d;
+}
 
-    if (gameValueEl) {
-        gameValueEl.textContent = `🟠 ${gameState.gameValue}`;
-    }
+#announcementButton {
+    background: #21476d;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 1rem;
+    cursor: pointer;
+    white-space: nowrap;
+}
 
-    if (announcementButton) {
-        announcementButton.textContent = `📣 (+${gameState.announcementPoints})`;
-    }
+#announcementButton:active {
+    transform: scale(0.96);
 }
 
 /* ==========================================================
-   19. RENDER ANNOUNCEMENT WINDOW
+   SCORE PANEL
 ========================================================== */
 
-function renderAnnouncementWindow() {
-    const list = document.getElementById("announcementList");
-    if (!list) return;
+.scorePanel {
+    background: #16304d;
+    border: 2px solid #264f78;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 16px;
+}
 
-    list.innerHTML = "";
+.scoreRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
 
-    gameState.tempAnnouncements.forEach((item, index) => {
-        const row = document.createElement("div");
-        row.className = "announcementRow";
+.scoreRow:last-child {
+    margin-bottom: 0;
+}
 
-        const title = document.createElement("div");
-        title.className = "announcementTitle";
-        title.textContent = `${item.name} (+${item.points})`;
+.scoreRow label {
+    color: #ffd54d;
+    font-weight: 600;
+    font-size: 1rem;
+    white-space: nowrap;
+}
 
-        const counter = document.createElement("div");
-        counter.className = "announcementCounter";
+.scoreRow input {
+    width: 110px;
+    height: 46px;
+    border: none;
+    border-radius: 10px;
+    background: #21476d;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+}
 
-        const minus = document.createElement("button");
-        minus.className = "counterButton";
-        minus.textContent = "−";
-
-        const value = document.createElement("span");
-        value.className = "counterValue";
-        value.textContent = item.count;
-
-        const plus = document.createElement("button");
-        plus.className = "counterButton";
-        plus.textContent = "+";
-
-        plus.onclick = () => {
-            if (!item.multiple && item.count >= 1) return; // нельзя больше 1
-            item.count++;
-            value.textContent = item.count;
-            updateAnnouncementPreview();
-        };
-
-        minus.onclick = () => {
-            if (item.count === 0) return;
-            item.count--;
-            value.textContent = item.count;
-            updateAnnouncementPreview();
-        };
-
-        counter.appendChild(minus);
-        counter.appendChild(value);
-        counter.appendChild(plus);
-
-        row.appendChild(title);
-        row.appendChild(counter);
-        list.appendChild(row);
-    });
-
-    updateAnnouncementPreview();
+.scoreRow input:focus {
+    background: #2b5b8a;
+    box-shadow: 0 0 0 2px #ffd54d;
 }
 
 /* ==========================================================
-   20. PREVIEW В МОДАЛКЕ
+   FOOTER
 ========================================================== */
 
-function updateAnnouncementPreview() {
-    let bonus = 0;
-
-    gameState.tempAnnouncements.forEach(item => {
-        bonus += item.points * item.count;
-    });
-
-    const previewGameValue = gameState.baseGameValue + bonus;
-
-    const previewGame  = document.getElementById("announcementTempGame");
-    const previewCount = document.getElementById("announcementTempCount");
-
-    if (previewGame)  previewGame.textContent  = previewGameValue;
-    if (previewCount) previewCount.textContent = `📣 (+${bonus})`;
-}
-
-
-
-/* ==========================================================
-   21. AUTO HINT (подсказка суммы)
-========================================================== */
-
-playerScoreInput.addEventListener("input", () => {
-    const value = Number(playerScoreInput.value);
-    if (Number.isNaN(value)) return;
-    opponentScoreInput.placeholder = gameState.gameValue - value;
-});
-
-opponentScoreInput.addEventListener("input", () => {
-    const value = Number(opponentScoreInput.value);
-    if (Number.isNaN(value)) return;
-    playerScoreInput.placeholder = gameState.gameValue - value;
-});
-
-/* ==========================================================
-   22. SAVE ROUND (проверка ввода)
-========================================================== */
-
-function saveRound() {
-    const playerPoints   = Number(playerScoreInput.value);
-    const opponentPoints = Number(opponentScoreInput.value);
-
-    if (Number.isNaN(playerPoints) || Number.isNaN(opponentPoints)) {
-        alert("Введите очки.");
-        return;
-    }
-
-    if (playerPoints < 0 || opponentPoints < 0) {
-        alert("Очки не могут быть отрицательными.");
-        return;
-    }
-
-    // 0 : 0 — неправильная раздача
-    if (playerPoints === 0 && opponentPoints === 0) {
-        processRound(0, 0);
-        return;
-    }
-
-    // Играющий не может набрать 0 (если у соперника есть очки)
-    if (playerPoints === 0 && opponentPoints > 0) {
-        alert("Играющий не может набрать 0 очков.\nМинимум — 2.");
-        return;
-    }
-
-    // Сумма должна быть равна стоимости игры
-    if (playerPoints + opponentPoints !== gameState.gameValue) {
-        alert(`Сумма очков должна быть ${gameState.gameValue}.`);
-        return;
-    }
-
-    processRound(playerPoints, opponentPoints);
+.gameFooter {
+    margin-top: auto;
+    padding-top: 8px;
 }
 
 /* ==========================================================
-   23. PROCESS ROUND (основная логика)
+   PLAYERS SELECT (экран выбора игроков)
 ========================================================== */
 
-function processRound(playerPoints, opponentPoints) {
-    const active = Number(gameState.activePlayerIndex);
-
-    // Определяем команду играющего
-    let activeTeam;
-    if (gameState.mode === 4) {
-        activeTeam = (active === 0 || active === 2) ? 1 : 2;
-    } else {
-        // Режим 3 (пока упрощённо)
-        activeTeam = active + 1;
-    }
-
-    let team1Delta = 0;
-    let team2Delta = 0;
-    let team1Note  = "";
-    let team2Note  = "";
-    let result     = "normal";
-
-    /* ---------- 1. Неправильная раздача (0:0) ---------- */
-    if (playerPoints === 0 && opponentPoints === 0) {
-        result = "redeal";
-
-        if (gameState.mode === 4) {
-            if (gameState.dealerIndex === 0 || gameState.dealerIndex === 2) {
-                team1Delta = -10;
-                team1Note  = "-10 неправильная";
-            } else {
-                team2Delta = -10;
-                team2Note  = "-10 неправильная";
-            }
-        }
-        // Для режима 3 можно добавить позже
-    }
-
-    /* ---------- 2. Капот (нет взятки у соперника) ---------- */
-    else if (opponentPoints === 0) {
-        result = "capot";
-
-        if (activeTeam === 1) {
-            team1Delta = gameState.gameValue;
-            team2Delta = -10;
-            team2Note  = "-10 нет взятки";
-        } else {
-            team2Delta = gameState.gameValue;
-            team1Delta = -10;
-            team1Note  = "-10 нет взятки";
-        }
-    }
-
-    /* ---------- 3. Болт ---------- */
-    else if (playerPoints > 0 && playerPoints < Math.ceil(gameState.gameValue / 2)) {
-        result = "bolt";
-
-        if (activeTeam === 1) {
-            gameState.team1.bolts++;
-            team2Delta = gameState.gameValue;
-            team1Note  = `⚡ ${playerPoints}`;
-        } else {
-            gameState.team2.bolts++;
-            team1Delta = gameState.gameValue;
-            team2Note  = `⚡ ${playerPoints}`;
-        }
-    }
-
-    /* ---------- 4. Обычная игра ---------- */
-    else {
-        if (activeTeam === 1) {
-            team1Delta = playerPoints;
-            team2Delta = opponentPoints;
-        } else {
-            team2Delta = playerPoints;
-            team1Delta = opponentPoints;
-        }
-    }
-
-    /* ---------- 5. Три болта → -10 ---------- */
-    
-// Для команды 1
-if (gameState.team1.bolts >= 3) {
-    gameState.team1.score -= 10;
-    gameState.team1.bolts = 0;
-
-    if (team1Note) {
-        team1Note += " ";
-    }
-    team1Note += " → -10";
+.playerRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
-// Для команды 2
-if (gameState.team2.bolts >= 3) {
-    gameState.team2.score -= 10;
-    gameState.team2.bolts = 0;
-
-    if (team2Note) {
-        team2Note += " ";
-    }
-    team2Note += " → -10";
+.playerSelect {
+    flex: 1;
+    height: 48px;
+    border: none;
+    border-radius: 12px;
+    background: #21476d;
+    color: #fff;
+    font-size: 1.05rem;
+    padding: 0 14px;
+    outline: none;
 }
 
-    /* ---------- 6. Начисляем очки ---------- */
-    gameState.team1.score += team1Delta;
-    gameState.team2.score += team2Delta;
-
-    /* ---------- 7. История ---------- */
-    addHistoryRow({
-    round:     gameState.round,
-    game:      gameState.gameValue,
-    announce:  gameState.announcementPoints,
-    team1:     team1Delta,
-    team2:     team2Delta,
-    team1Note: team1Note,
-    team2Note: team2Note,
-    team1Total: gameState.team1.score,   // ← добавили
-    team2Total: gameState.team2.score,   // ← добавили
-    dealer:    gameState.players[gameState.dealerIndex],
-    active:    gameState.players[gameState.activePlayerIndex],
-    result:    result
-});
-
-    /* ---------- 8. Следующая раздача ---------- */
-    gameState.round++;
-    nextDealer();
-
-    // Сбрасываем объявления
-    resetAnnouncements();
-    updateGameValue();
-
-    // Очищаем поля ввода
-    playerScoreInput.value = "";
-    opponentScoreInput.value = "";
-    playerScoreInput.placeholder = "";
-    opponentScoreInput.placeholder = "";
-
-    renderGame();
-    saveGame();
-
-    // Проверяем победителя / ничью
-    checkWinner();
+.removePlayerButton {
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: #3a1f2b;
+    color: #ff6b6b;
+    font-size: 1.1rem;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 /* ==========================================================
-   24. CHECK WINNER + DRAW
+   HISTORY
 ========================================================== */
 
-function checkWinner() {
-    const s1 = gameState.team1.score;
-    const s2 = gameState.team2.score;
-
-    if (s1 >= 101 && s2 >= 101) {
-        showDraw();
-        return;
-    }
-
-    if (s1 >= 101) {
-        showWinner(1);
-        return;
-    }
-
-    if (s2 >= 101) {
-        showWinner(2);
-        return;
-    }
+.modalHeader {
+    text-align: center;
+    margin-bottom: 12px;
 }
 
+.modalHeader h2 {
+    color: #ffd54d;
+    font-size: 1.3rem;
+}
 
+.historyWrapper {
+    flex: 1;
+    overflow: auto;
+    margin: 10px 0 16px;
+    -webkit-overflow-scrolling: touch;
+}
 
+#historyTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
 
+#historyTable th {
+    background: #173457;
+    color: #ffd54d;
+    padding: 10px 6px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#historyTable td {
+    padding: 10px 6px;
+    text-align: center;
+    border-bottom: 1px solid #264f78;
+}
+
+#historyTable tr:nth-child(even) {
+    background: #132c46;
+}
+
+.historyPenalty {
+    display: block;
+    color: #ff6b6b;
+    font-size: 0.8rem;
+    margin-top: 2px;
+}
+
+.modalFooter {
+    margin-top: auto;
+}
 
 /* ==========================================================
-   25. RENDER GAME (счёт, болты, раунд, таймер)
+   MODALS
 ========================================================== */
 
-
-    // Болты
-    
-
-function formatBolts(count) {
-    if (!count || count <= 0) return "";
-    return "⚡".repeat(Math.min(count, 3));
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 16px;
 }
 
+.modal.active {
+    display: flex;
+}
 
+.modalWindow {
+    width: 100%;
+    max-width: 420px;
+    max-height: 90dvh;
+    overflow-y: auto;
+    background: #173457;
+    border-radius: 18px;
+    padding: 20px;
+    border: 2px solid #3d6b99;
+    -webkit-overflow-scrolling: touch;
+}
 
-function renderGame() {
-    // Номер раздачи
-    if (roundNumber) {
-        roundNumber.textContent = `#${gameState.round}`;
-    }
+.modalWindow h2 {
+    text-align: center;
+    color: #ffd54d;
+    margin-bottom: 18px;
+    font-size: 1.3rem;
+}
 
-    // Таймер
-    updateTimer();
+.modalButtons {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
 
-    // Счёт
-    if (team1Score) team1Score.textContent = gameState.team1.score;
-    if (team2Score) team2Score.textContent = gameState.team2.score;
+.modalButtons .primaryButton,
+.modalButtons .secondaryButton {
+    margin-top: 0;
+}
 
-    // Болты (в виде молний)
-    if (team1Bolts) {
-        team1Bolts.textContent = formatBolts(gameState.team1.bolts);
-    }
-    if (team2Bolts) {
-        team2Bolts.textContent = formatBolts(gameState.team2.bolts);
+/* ==========================================================
+   ANNOUNCEMENTS
+========================================================== */
+
+#announcementList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.announcementRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #21476d;
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+.announcementTitle {
+    font-size: 1rem;
+}
+
+.announcementCounter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.counterButton {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: #0d2342;
+    color: #ffd54d;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.counterValue {
+    min-width: 24px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.announcementPreview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0d2342;
+    border: 2px solid #264f78;
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+#announcementTempCount {
+    color: #ffd54d;
+}
+
+#announcementTempGame {
+    font-size: 1.25rem;
+}
+
+/* ==========================================================
+   RULES
+========================================================== */
+
+.rulesWindow {
+    max-width: 520px;
+}
+
+.rulesContent {
+    max-height: 55dvh;
+    overflow-y: auto;
+    line-height: 1.65;
+    margin-bottom: 16px;
+    padding-right: 4px;
+}
+
+.rulesContent h3 {
+    color: #ffd54d;
+    margin: 16px 0 8px;
+}
+
+.rulesContent p {
+    margin-bottom: 10px;
+}
+
+.rulesContent ul {
+    padding-left: 18px;
+    margin-bottom: 12px;
+}
+
+.rulesContent li {
+    margin-bottom: 6px;
+}
+
+/* ==========================================================
+   VICTORY
+========================================================== */
+
+#victoryScreen {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.victoryIcon {
+    font-size: 4.5rem;
+    margin-bottom: 12px;
+}
+
+#winnerTitle {
+    color: #ffd54d;
+    font-size: 2rem;
+    margin-bottom: 8px;
+}
+
+#winnerText {
+    font-size: 1.15rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+#victoryStatistics {
+    width: 100%;
+    max-width: 360px;
+    background: #16304d;
+    border: 2px solid #264f78;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 24px;
+    line-height: 1.7;
+    text-align: left;
+}
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #315b89;
+    border-radius: 6px;
+}
+
+/* ==========================================================
+   iPHONE SAFE AREA
+========================================================== */
+
+@supports (padding: max(0px)) {
+    .screen {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
     }
 }
 
 /* ==========================================================
-   26. HISTORY
+   SMALL PHONES
 ========================================================== */
 
-function addHistoryRow(record) {
-    gameState.history.push(record);
-    renderHistory();
-}
+@media (max-width: 380px) {
+    .teamScore {
+        font-size: 1.55rem;
+    }
 
-function renderHistory() {
-    if (!historyBody) return;
+    .scoreRow input {
+        width: 96px;
+    }
 
-    historyBody.innerHTML = "";
-
-    gameState.history.forEach(item => {
-        const row = document.createElement("tr");
-
-        // №
-        row.appendChild(createCell(item.round));
-
-        // Стоимость игры
-        row.appendChild(createCell(item.game));
-
-        // Объявления
-        row.appendChild(createCell(
-            item.announce > 0 ? `+${item.announce}` : "—"
-        ));
-
-        // Команда 1
-        const team1Cell = document.createElement("td");
-        const sign1 = item.team1 > 0 ? `+${item.team1}` : item.team1;
-        team1Cell.innerHTML = `
-            <div>${sign1} <span class="historyTotal">(${item.team1Total})</span></div>
-            <small class="historyPenalty">${item.team1Note || ""}</small>
-        `;
-        row.appendChild(team1Cell);
-
-        // Команда 2
-        const team2Cell = document.createElement("td");
-        const sign2 = item.team2 > 0 ? `+${item.team2}` : item.team2;
-        team2Cell.innerHTML = `
-            <div>${sign2} <span class="historyTotal">(${item.team2Total})</span></div>
-            <small class="historyPenalty">${item.team2Note || ""}</small>
-        `;
-        row.appendChild(team2Cell);
-
-        // Раздающий
-        row.appendChild(createCell(item.dealer));
-
-        // Играющий
-        row.appendChild(createCell(item.active));
-
-        historyBody.appendChild(row);
-    });
-}
-
-
-
-function createCell(value) {
-    const td = document.createElement("td");
-    td.textContent = value;
-    return td;
-}
-
-/* ==========================================================
-   27. HISTORY WINDOW
-========================================================== */
-
-function openHistory() {
-    renderHistory();
-    showScreen(historyScreen);
-}
-
-function closeHistory() {
-    if (gameState.mode === 4) {
-        showScreen(gameScreen4);
-    } else {
-        showScreen(gameScreen3);
+    .infoControl {
+        min-width: 120px;
     }
 }
 
-/* ==========================================================
-   28. WINNER
-========================================================== */
 
-function showWinner(team) {
-    stopTimer();
-    deleteSave();
-    showScreen(victoryScreen);
 
-    document.getElementById("winnerTitle").textContent =
-        `🏆 Победила команда ${team}`;
 
-    document.getElementById("winnerText").textContent =
-        `Игра окончена после ${gameState.round - 1} раздач`;
-
-    document.getElementById("victoryStatistics").innerHTML = `
-        <p>Команда 1: <b>${gameState.team1.score}</b></p>
-        <p>Болты: ${gameState.team1.bolts}</p>
-        <br>
-        <p>Команда 2: <b>${gameState.team2.score}</b></p>
-        <p>Болты: ${gameState.team2.bolts}</p>
-        <br>
-        <p>Время игры: <b>${gameTimer.textContent}</b></p>
-    `;
+/* Кастомный выбор игрока */
+.pickerRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #21476d;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
 }
 
-/* ==========================================================
-   29. DRAW (ничья)
-========================================================== */
+.pickerRow:active {
+    background: #2b5b8a;
+}
 
-function showDraw() {
-    stopTimer();
-    deleteSave();
-    showScreen(victoryScreen);
+.pickerName {
+    font-size: 1.1rem;
+    flex: 1;
+}
 
-    document.getElementById("winnerTitle").textContent =
-        `🤝 Ничья!`;
+.pickerDelete {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: #3a1f2b;
+    color: #ff6b6b;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-    document.getElementById("winnerText").textContent =
-        `Обе команды набрали 101+ очков после ${gameState.round - 1} раздач`;
+.newPlayerRow {
+    background: #1d4ed8;
+}
 
-    document.getElementById("victoryStatistics").innerHTML = `
-        <p>Команда 1: <b>${gameState.team1.score}</b></p>
-        <p>Болты: ${gameState.team1.bolts}</p>
-        <br>
-        <p>Команда 2: <b>${gameState.team2.score}</b></p>
-        <p>Болты: ${gameState.team2.bolts}</p>
-        <br>
-        <p>Время игры: <b>${gameTimer.textContent}</b></p>
-    `;
+.newPlayerRow .pickerName {
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Чтобы поле выглядело как селект */
+.playerSelect {
+    flex: 1;
+    height: 48px;
+    border-radius: 12px;
+    background: #21476d;
+    color: #fff;
+    font-size: 1.05rem;
+    padding: 0 14px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
 }
 
 
-/* ==========================================================
-   30. RULES
-========================================================== */
-
-function openRules() {
-    document.getElementById("rulesModal").classList.add("active");
+.historyTotal {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 500;
 }
 
-function closeRules() {
-    document.getElementById("rulesModal").classList.remove("active");
+.historyPenalty {
+    display: block;
+    color: #ff6b6b;
+    font-size: 0.78rem;
+    margin-top: 2px;
 }
-
-function fillRules() {
-    const rules = document.getElementById("rulesContent");
-    if (!rules) return;
-
-    rules.innerHTML = `
-<h3>🎯 Цель игры</h3>
-<p>
-Побеждает команда, первой набравшая <b>101</b> очко или больше.<br>
-Если обе команды набрали 101+ в одной раздаче — <b>ничья</b>.<br>
-Счёт может уходить в минус.
-</p>
-
-<h3>🃏 Стоимость игры</h3>
-<ul>
-    <li>Простая игра — <b>16</b></li>
-    <li>Все объявления (включая Бэлу) прибавляются к стоимости игры.</li>
-    <li>Пример: 16 + Бэла (+2) = <b>18</b></li>
-</ul>
-
-<h3>📣 Объявления</h3>
-<p>
-Тэрц, 50, 100 и Каре можно объявлять несколько раз.<br>
-Каре 9, Каре Валетов и Бэла — только один раз.
-</p>
-
-<h3>⚡ Болт</h3>
-<p>
-Если играющий набрал меньше половины стоимости игры, но больше нуля —<br>
-он получает болт, а все очки игры переходят соперникам.
-</p>
-<p>
-После третьего болта: <b>⚡⚡⚡ → −10</b>, после чего болты обнуляются.
-</p>
-
-<h3>🚫 Нет взятки (Капот)</h3>
-<p>
-Если соперники набрали 0 — они получают штраф <b>-10</b>,<br>
-а играющий получает все очки игры.
-</p>
-
-<h3>❌ Неправильная раздача</h3>
-<p>
-При результате <b>0 : 0</b> раздающий получает <b>-10</b>,<br>
-очки игры никому не начисляются.
-</p>
-`;
-}
-
-/* ==========================================================
-   31. RESET GAME (новая игра)
-========================================================== */
-
-function resetGame() {
-    stopTimer();
-    deleteSave();
-
-    gameState.mode = 0;
-    gameState.players = [];
-    gameState.round = 1;
-    gameState.dealerIndex = 0;
-    gameState.activePlayerIndex = 0;
-    gameState.timerSeconds = 0;
-
-    gameState.baseGameValue = 16;
-    gameState.gameValue = 16;
-    gameState.announcementPoints = 0;
-
-    gameState.team1.score = 0;
-    gameState.team2.score = 0;
-    gameState.team1.bolts = 0;
-    gameState.team2.bolts = 0;
-
-    gameState.history = [];
-
-    // Сбрасываем объявления
-    if (gameState.savedAnnouncements.length) {
-        resetAnnouncements();
-    }
-}
-
-/* ==========================================================
-   32. INITIALIZATION
-========================================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-    fillRules();
-    buildAnnouncements();
-    updateTimer();
-
-    // Отключаем кнопку "Продолжить", если нет сохранения
-    const continueBtn = document.getElementById("continueGameButton");
-    if (continueBtn && localStorage.getItem(SAVE_GAME_KEY) === null) {
-        continueBtn.disabled = true;
-    }
-});
-
-
-
-
-
-
-
-

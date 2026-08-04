@@ -1,887 +1,289 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, user-scalable=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Belot Club</title>
-
     <link rel="stylesheet" href="style.css">
-
 </head>
-
 <body>
 
-<!-- ==========================================================
-     ГЛАВНОЕ МЕНЮ
-========================================================== -->
-
-<section id="menuScreen" class="screen active">
-
-    <div class="menuLogo">
-        ♠ BEL<span>OT</span> CLUB ♣
+<!-- Кастомный выбор игрока -->
+<div id="playerPickerModal" class="modal">
+    <div class="modalWindow" style="max-height: 80dvh;">
+        <h2>Выбор игрока</h2>
+        <div id="playerPickerList"></div>
+        <button class="secondaryButton" onclick="closePlayerPicker()" style="margin-top:16px;">
+            Закрыть
+        </button>
     </div>
+</div>
+
+
+<!-- ===================== ГЛАВНОЕ МЕНЮ ===================== -->
+<section id="menuScreen" class="screen active">
+    <div class="menuLogo">♠ BEL<span>OT</span> CLUB ♣</div>
 
     <div class="menuButtons">
-
-        <button
-            id="newGameButton"
-            class="primaryButton"
-            onclick="startGame()">
-
+        <button id="newGameButton" class="primaryButton" onclick="startGame()">
             🎮 Новая игра
-
         </button>
 
-        <button
-            id="continueGameButton"
-            class="primaryButton"
-            onclick="continueGame()">
-
+        <button id="continueGameButton" class="primaryButton" onclick="continueGame()">
             ▶ Продолжить
-
         </button>
 
-        <button
-            id="rulesButton"
-            class="secondaryButton"
-            onclick="openRules()">
-
+        <button id="rulesButton" class="secondaryButton" onclick="openRules()">
             📖 Правила
-
         </button>
-
     </div>
-
 </section>
 
-<!-- ==========================================================
-     ВЫБОР РЕЖИМА
-========================================================== -->
-
+<!-- ===================== ВЫБОР РЕЖИМА ===================== -->
 <section id="modeScreen" class="screen">
-
-    <h2 class="screenTitle">
-
-        Выберите режим
-
-    </h2>
+    <h2 class="screenTitle">Выберите режим</h2>
 
     <div class="modeButtons">
-
-        <button
-            class="primaryButton"
-            onclick="selectMode(3)">
-
-            3 игрока
-
-        </button>
-
-        <button
-            class="primaryButton"
-            onclick="selectMode(4)">
-
-            4 игрока
-
-        </button>
-
-        <button
-            class="secondaryButton"
-            onclick="backToMenu()">
-
-            Назад
-
-        </button>
-
+        <button class="primaryButton" onclick="selectMode(4)">4 игрока</button>
+        <button class="primaryButton" onclick="selectMode(3)">3 игрока</button>
+        <button class="secondaryButton" onclick="backToMenu()">Назад</button>
     </div>
-
 </section>
 
-<!-- ==========================================================
-     ВЫБОР ИГРОКОВ
-========================================================== -->
-
+<!-- ===================== ВЫБОР ИГРОКОВ ===================== -->
 <section id="playersScreen" class="screen">
-
-    <h2 class="screenTitle">
-
-        Игроки
-
-    </h2>
+    <h2 class="screenTitle">Игроки</h2>
 
     <div id="playersContainer">
-
-        <!-- JS -->
-
+        <!-- JS заполняет -->
     </div>
 
     <div class="playersButtons">
-
-        <button
-            class="primaryButton"
-            onclick="confirmPlayers()">
-
-            ▶ Начать игру
-
-        </button>
-
-        <button
-            class="secondaryButton"
-            onclick="backToMode()">
-
-            Назад
-
-        </button>
-
+        <button class="primaryButton" onclick="confirmPlayers()">▶ Начать игру</button>
+        <button class="secondaryButton" onclick="showScreen(modeScreen)">Назад</button>
     </div>
-
 </section>
 
-<!-- ==========================================================
-     ИГРА (4 ИГРОКА)
-========================================================== -->
-
+<!-- ===================== ИГРА 4 ИГРОКА ===================== -->
 <section id="gameScreen4" class="screen">
 
     <!-- Верхняя панель -->
-
     <header class="topBar">
-
-        <button
-            id="menuButton"
-            class="iconButton"
-            onclick="openGameMenu()">
-
-            ☰
-
-        </button>
-
-        <div class="gameLogo">
-
-            ♠ BELOT CLUB ♣
-
-        </div>
-
-        <button
-            id="bookButton"
-            class="iconButton"
-            onclick="openRules()">
-
-            📖
-
-        </button>
-
+        <button class="iconButton" onclick="openGameMenu()">☰</button>
+        <div class="gameLogo">♠ BELOT CLUB ♣</div>
+        <button class="iconButton" onclick="openRules()">📖</button>
     </header>
 
-    <!-- Номер раздачи -->
-
+    <!-- Раунд + Таймер -->
     <div class="roundBar">
-
-        <div
-            id="roundNumber">
-
-            #1
-
-        </div>
-
-        <div
-            id="gameTimer"
-            onclick="toggleTimer()">
-
-            ⏱ 00:00
-
-        </div>
-
+        <div id="roundNumber">#1</div>
+        <div id="gameTimer" class="timer-paused" onclick="toggleTimer()">⏱ 00:00</div>
     </div>
 
-    <!-- Команды -->
-
-    <section
-        id="teamsContainer"
-        onclick="openHistory()">
-
-        <article
-            id="team1Card"
-            class="teamCard">
-
-            <h3>
-
-                Команда 1
-
-            </h3>
-
-            <div
-                id="team1Players"
-                class="teamPlayers">
-
-                <!-- JS -->
-
-            </div>
-
+    <!-- Команды (клик = история) -->
+    <section id="teamsContainer" onclick="openHistory()">
+        <article class="teamCard">
+            <h3>Команда 1</h3>
+            <div id="team1Players" class="teamPlayers"></div>
             <div class="teamBottom">
-
-                <div
-                    id="team1Score"
-                    class="teamScore">
-
-                    0
-
-                </div>
-
-                <div
-                    id="team1Bolts"
-                    class="teamBolts">
-
-                    ⚡0
-
-                </div>
-
+                <div id="team1Score" class="teamScore">0</div>
+                <div id="team1Bolts" class="teamBolts"></div>
             </div>
-
         </article>
 
-        <article
-            id="team2Card"
-            class="teamCard">
-
-            <h3>
-
-                Команда 2
-
-            </h3>
-
-            <div
-                id="team2Players"
-                class="teamPlayers">
-
-                <!-- JS -->
-
-            </div>
-
+        <article class="teamCard">
+            <h3>Команда 2</h3>
+            <div id="team2Players" class="teamPlayers"></div>
             <div class="teamBottom">
-
-                <div
-                    id="team2Score"
-                    class="teamScore">
-
-                    0
-
-                </div>
-
-                <div
-                    id="team2Bolts"
-                    class="teamBolts">
-
-                    ⚡0
-
-                </div>
-
+                <div id="team2Score" class="teamScore">0</div>
+                <div id="team2Bolts" class="teamBolts"></div>
             </div>
-
         </article>
-
     </section>
 
     <!-- Раздающий -->
-
-    <section class="dealerBlock">
-
-        <span>
-
-            🃏 Раздаёт
-
-        </span>
-
-        <span id="dealerName">
-
-            —
-
-        </span>
-
-    </section>
+    <div class="infoRow">
+        <span class="infoLabel">🃏 Раздаёт</span>
+        <span id="dealerName" class="infoValue">—</span>
+    </div>
 
     <!-- Играющий -->
-
-    <section class="playerBlock">
-
-        <label for="activePlayerSelect">
-
-            🎯 Играет
-
-        </label>
-
-        <select
-            id="activePlayerSelect">
-
-            <!-- JS -->
-
-        </select>
-
-    </section>
-
-    <!-- Стоимость игры -->
-
-    <section class="valueBar">
-
-        <div
-            id="gameValue">
-
-            🟠 16
-
-        </div>
-
-        <button
-            id="announcementButton"
-            onclick="openAnnouncements()">
-
-            📣 (+0)
-
-        </button>
-
-    </section>
-    <!-- Ввод очков -->
-
-    <section class="scorePanel">
-
-        <div class="scoreRow">
-
-            <label for="opponentScoreInput">
-
-                Соперникам
-
-            </label>
-
-            <input
-                id="opponentScoreInput"
-                type="number"
-                inputmode="numeric"
-                autocomplete="off"
-                min="0">
-
-        </div>
-
-        <div class="scoreRow">
-
-            <label for="playerScoreInput">
-
-                Играющему
-
-            </label>
-
-            <input
-                id="playerScoreInput"
-                type="number"
-                inputmode="numeric"
-                autocomplete="off"
-                min="0">
-
-        </div>
-
-    </section>
-
-    <!-- Кнопка сохранения -->
-
-    <footer class="gameFooter">
-
-        <button
-            id="saveRoundButton"
-            class="primaryButton"
-            onclick="saveRound()">
-
-            💾 Сохранить
-
-        </button>
-
-    </footer>
-
-</section>
-
-<!-- ==========================================================
-     ИГРА (3 ИГРОКА)
-========================================================== -->
-
-<section id="gameScreen3" class="screen">
-
-    <!-- Верхняя панель -->
-
-    <header class="topBar">
-
-        <button
-            class="iconButton"
-            onclick="openGameMenu()">
-
-            ☰
-
-        </button>
-
-        <div class="gameLogo">
-
-            ♠ BELOT CLUB ♣
-
-        </div>
-
-        <button
-            class="iconButton"
-            onclick="openRules()">
-
-            📖
-
-        </button>
-
-    </header>
-
-    <!-- Раздача -->
-
-    <div class="roundBar">
-
-        <div id="roundNumber3">
-
-            #1
-
-        </div>
-
-        <div
-            id="gameTimer3"
-            onclick="toggleTimer()">
-
-            ⏱ 00:00
-
-        </div>
-
+    <div class="infoRow">
+        <label class="infoLabel" for="activePlayerSelect">🎯 Играет</label>
+        <select id="activePlayerSelect" class="infoControl"></select>
     </div>
 
-    <!-- Игроки -->
-<div class="team-card" id="players3Card">
-
-    <div class="player3-row">
-
-        <span id="player3Name1">Игрок 1</span>
-
-        <span id="player3Score1">0</span>
-
-        <span id="player3Bolts1" class="bolts"></span>
-
+    <!-- Стоимость + Объявления -->
+    <div class="valueBar">
+        <div id="gameValue">🟠 16</div>
+        <button id="announcementButton" onclick="openAnnouncements()">📣 (+0)</button>
     </div>
-
-    <div class="player3-row">
-
-        <span id="player3Name2">Игрок 2</span>
-
-        <span id="player3Score2">0</span>
-
-        <span id="player3Bolts2" class="bolts"></span>
-
-    </div>
-
-    <div class="player3-row">
-
-        <span id="player3Name3">Игрок 3</span>
-
-        <span id="player3Score3">0</span>
-
-        <span id="player3Bolts3" class="bolts"></span>
-
-    </div>
-
-</div>
-    
-
-    <!-- Раздающий -->
-
-    <div class="score-row">
-
-    <label id="playerLabel1">
-
-        Игрок 1
-
-    </label>
-
-    <input
-        id="playerInput1"
-        type="number"
-    >
-
-</div>
-
-<div class="score-row">
-
-    <label id="playerLabel2">
-
-        Игрок 2
-
-    </label>
-
-    <input
-        id="playerInput2"
-        type="number"
-    >
-
-</div>
-
-<div class="score-row">
-
-    <label id="playerLabel3">
-
-        Игрок 3
-
-    </label>
-
-    <input
-        id="playerInput3"
-        type="number"
-    >
-
-</div>
-    <!-- Играющий -->
-
-    <section class="playerBlock">
-
-        <label for="activePlayerSelect3">
-
-            🎯 Играет
-
-        </label>
-
-        <select
-            id="activePlayerSelect3">
-
-            <!-- JS -->
-
-        </select>
-
-    </section>
-
-    <!-- Стоимость игры -->
-
-    <section class="valueBar">
-
-        <div
-            id="gameValue3">
-
-            🟠 16
-
-        </div>
-
-        <button
-            id="announcementButton3"
-            onclick="openAnnouncements()">
-
-            📣 (+0)
-
-        </button>
-
-    </section>
 
     <!-- Ввод очков -->
-
     <section class="scorePanel">
-
         <div class="scoreRow">
-
-            <label for="opponentScoreInput3">
-
-                Соперникам
-
-            </label>
-
-            <input
-                id="opponentScoreInput3"
-                type="number"
-                inputmode="numeric"
-                autocomplete="off"
-                min="0">
-
+            <label for="opponentScoreInput">Соперникам</label>
+            <input id="opponentScoreInput" type="number" inputmode="numeric" min="0" autocomplete="off">
         </div>
-
         <div class="scoreRow">
-
-            <label for="playerScoreInput3">
-
-                Играющему
-
-            </label>
-
-            <input
-                id="playerScoreInput3"
-                type="number"
-                inputmode="numeric"
-                autocomplete="off"
-                min="0">
-
+            <label for="playerScoreInput">Играющему</label>
+            <input id="playerScoreInput" type="number" inputmode="numeric" min="0" autocomplete="off">
         </div>
-
     </section>
 
     <!-- Кнопка -->
-
     <footer class="gameFooter">
-
-        <button
-            id="saveRoundButton3"
-            class="primaryButton"
-            onclick="saveRound()">
-
-            💾 Сохранить
-
+        <button id="saveRoundButton" class="primaryButton" onclick="saveRound()">
+            💾 Сохранить раздачу
         </button>
-
     </footer>
-
 </section>
 
 
-  <!-- ==========================================================
-     ИСТОРИЯ ИГРЫ
-========================================================== -->
 
+<!-- ===================== ИСТОРИЯ ===================== -->
 <section id="historyScreen" class="screen">
-
     <header class="modalHeader">
-
-        <h2>
-
-            История игры
-
-        </h2>
-
+        <h2>История игры</h2>
     </header>
 
     <div class="historyWrapper">
-
         <table id="historyTable">
-
             <thead>
-
                 <tr>
-
                     <th>#</th>
                     <th>Игра</th>
                     <th>📣</th>
-                    <th>Команда 1</th>
-                    <th>Команда 2</th>
+                    <th>Ком.1</th>
+                    <th>Ком.2</th>
                     <th>Раздаёт</th>
                     <th>Играет</th>
-
                 </tr>
-
             </thead>
-
-            <tbody id="historyBody">
-
-                <!-- JS -->
-
-            </tbody>
-
+            <tbody id="historyBody"></tbody>
         </table>
-
     </div>
 
     <footer class="modalFooter">
-
-        <button
-            class="primaryButton"
-            onclick="closeHistory()">
-
-            Закрыть
-
-        </button>
-
+        <button class="primaryButton" onclick="closeHistory()">Закрыть</button>
     </footer>
-
 </section>
 
-<!-- ==========================================================
-     МЕНЮ ИГРЫ
-========================================================== -->
-
-<div
-    id="gameMenuModal"
-    class="modal">
-
+<!-- ===================== МЕНЮ ИГРЫ ===================== -->
+<div id="gameMenuModal" class="modal">
     <div class="modalWindow">
+        <h2>Меню</h2>
 
-        <h2>
-
-            Меню
-
-        </h2>
-
-        <button
-            class="primaryButton"
-            onclick="saveAndExit()">
-
+        <button class="primaryButton" onclick="saveAndExit()">
             💾 Сохранить и выйти
-
         </button>
 
-        <button
-            class="secondaryButton"
-            onclick="exitWithoutSaving()">
-
+        <button class="secondaryButton" onclick="exitWithoutSaving()">
             🏠 Выйти без сохранения
-
         </button>
 
-        <button
-            class="secondaryButton"
-            onclick="closeGameMenu()">
-
+        <button class="secondaryButton" onclick="closeGameMenu()">
             Отмена
-
         </button>
-
     </div>
-
 </div>
 
-<!-- ==========================================================
-     ОБЪЯВЫ
-========================================================== -->
-
-<div
-    id="announcementModal"
-    class="modal">
-
+<!-- ===================== ОБЪЯВЛЕНИЯ ===================== -->
+<div id="announcementModal" class="modal">
     <div class="modalWindow">
-
-        <h2>
-
-            Объявы
-
-        </h2>
+        <h2>Объявления</h2>
 
         <div id="announcementList">
-
             <!-- JS -->
-
         </div>
 
-<div class="announcementPreview">
-
-    <span id="announcementTempCount">
-        📣 (+0)
-    </span>
-
-    <span id="announcementTempGame">
-        16
-    </span>
-
-</div>
-
-        
-        <div class="announcementResult">
-
-            <div id="announcementTotal">
-
-                📣 (+0)
-
-            </div>
-
-            <div id="announcementGameValue">
-
-                🟠 16
-
-            </div>
-
+        <div class="announcementPreview">
+            <span id="announcementTempCount">📣 (+0)</span>
+            <span id="announcementTempGame">16</span>
         </div>
 
-        <button
-            class="primaryButton"
-            onclick="applyAnnouncements()">
-
-            Готово
-
-        </button>
-
+        <div class="modalButtons">
+            <button class="secondaryButton" onclick="cancelAnnouncements()">Отмена</button>
+            <button class="primaryButton" onclick="applyAnnouncements()">Готово</button>
+        </div>
     </div>
-
 </div>
 
-<!-- ==========================================================
-     ПРАВИЛА
-========================================================== -->
-
-<div
-    id="rulesModal"
-    class="modal">
-
+<!-- ===================== ПРАВИЛА ===================== -->
+<div id="rulesModal" class="modal">
     <div class="modalWindow rulesWindow">
+        <h2>Правила Belot Club</h2>
 
-        <h2>
-
-            Правила Belot Club
-
-        </h2>
-
-        <div
-            id="rulesContent"
-            class="rulesContent">
-
+        <div id="rulesContent" class="rulesContent">
             <!-- JS -->
-
         </div>
 
-        <button
-            class="primaryButton"
-            onclick="closeRules()">
-
-            Закрыть
-
-        </button>
-
+        <button class="primaryButton" onclick="closeRules()">Закрыть</button>
     </div>
-
 </div>
 
-<!-- ==========================================================
-     ПОБЕДА
-========================================================== -->
-
+<!-- ===================== ПОБЕДА / НИЧЬЯ ===================== -->
 <section id="victoryScreen" class="screen">
+    <div class="victoryIcon">🏆</div>
+    <h1 id="winnerTitle">Победа!</h1>
+    <div id="winnerText">Команда 1 победила</div>
 
-    <div class="victoryIcon">
-
-        🏆
-
-    </div>
-
-    <h1 id="winnerTitle">
-
-        Победа!
-
-    </h1>
-
-    <div id="winnerText">
-
-        Команда 1 победила
-
-    </div>
-
-    <div
-        id="victoryStatistics">
-
+    <div id="victoryStatistics">
         <!-- JS -->
-
     </div>
 
-    <button
-        class="primaryButton"
-        onclick="backToMenu()">
-
+    <button class="primaryButton" onclick="backToMenu()">
         🏠 Главное меню
-
     </button>
+</section>
 
+<!-- ===================== ИГРА 3 ИГРОКА (заготовка) ===================== -->
+<section id="gameScreen3" class="screen">
+    <header class="topBar">
+        <button class="iconButton" onclick="openGameMenu()">☰</button>
+        <div class="gameLogo">♠ BELOT CLUB ♣</div>
+        <button class="iconButton" onclick="openRules()">📖</button>
+    </header>
+
+    <div class="roundBar">
+        <div id="roundNumber">#1</div>
+        <div id="gameTimer" class="timer-paused" onclick="toggleTimer()">⏱ 00:00</div>
+    </div>
+
+    <div class="infoRow">
+        <span class="infoLabel">🃏 Раздаёт</span>
+        <span id="dealerName" class="infoValue">—</span>
+    </div>
+
+    <div class="infoRow">
+        <label class="infoLabel" for="activePlayerSelect">🎯 Играет</label>
+        <select id="activePlayerSelect" class="infoControl"></select>
+    </div>
+
+    <div class="valueBar">
+        <div id="gameValue">🟠 16</div>
+        <button id="announcementButton" onclick="openAnnouncements()">📣 (+0)</button>
+    </div>
+
+    <section class="scorePanel">
+        <div class="scoreRow">
+            <label for="opponentScoreInput">Соперникам</label>
+            <input id="opponentScoreInput" type="number" inputmode="numeric" min="0">
+        </div>
+        <div class="scoreRow">
+            <label for="playerScoreInput">Играющему</label>
+            <input id="playerScoreInput" type="number" inputmode="numeric" min="0">
+        </div>
+    </section>
+
+    <footer class="gameFooter">
+        <button class="primaryButton" onclick="saveRound()">💾 Сохранить раздачу</button>
+    </footer>
 </section>
 
 <script src="script.js"></script>
-
 </body>
-
 </html>
-  
 
-  
+
+

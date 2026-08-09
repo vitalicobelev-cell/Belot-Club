@@ -638,8 +638,8 @@ function buildActivePlayerList() {
 const announcements = [
     { name: "Тэрц",   points: 2,  multiple: true  },
     { name: "Бэла",   points: 2,  multiple: false },
-    { name: "50",     points: 4,  multiple: true  },
-    { name: "100",    points: 8,  multiple: true  },
+    { name: "50",     points: 5,  multiple: true  },
+    { name: "100",    points: 10,  multiple: true  },
     { name: "Каре",   points: 10, multiple: true  },
     { name: "Каре 9", points: 14, multiple: false },
     { name: "Каре В", points: 20, multiple: false }

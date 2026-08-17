@@ -1,0 +1,433 @@
+/* ==========================================================
+   BELOT CLUB
+   Version 1.2
+   Author: Vitaliy K.
+========================================================== */
+
+/* ==========================================================
+   RESET
+========================================================== */
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { font-size:16px; scroll-behavior:smooth; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    width:100%; min-height:100vh; min-height:100dvh; overflow-x:hidden;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ==========================================================
+   THEMES
+========================================================== */
+body.theme-blue {
+    --bg-primary: #0d2342; --bg-secondary: #16304d; --bg-card: #1a3a5d; --bg-input: #21476d;
+    --bg-accent: #173457; --bg-hover: #2b5b8a; --border-color: #264f78;
+    --text-primary: #ffffff; --text-secondary: #c8d6e5; --text-accent: #ffd54d; --text-muted: #94a3b8;
+    --shadow: rgba(0,0,0,0.4); --score-color: #ffd54d; --bolt-color: #ffd54d;
+    --danger: #ff6b6b; --success: #4ade80; --primary: #1d4ed8; --primary-hover: #1e40af;
+}
+body.theme-graphite {
+    --bg-primary: #1a1a2e; --bg-secondary: #252540; --bg-card: #2d2d4a; --bg-input: #3a3a5a;
+    --bg-accent: #222244; --bg-hover: #4a4a6a; --border-color: #4a4a6a;
+    --text-primary: #e8e8f0; --text-secondary: #b8b8d0; --text-accent: #a8b5ff; --text-muted: #8888aa;
+    --shadow: rgba(0,0,0,0.5); --score-color: #a8b5ff; --bolt-color: #ffd54d;
+    --danger: #ff6b6b; --success: #4ade80; --primary: #5a6bd8; --primary-hover: #4a5bc8;
+}
+body.theme-black {
+    --bg-primary: #0a0a0a; --bg-secondary: #161616; --bg-card: #1e1e1e; --bg-input: #2a2a2a;
+    --bg-accent: #141414; --bg-hover: #333333; --border-color: #333333;
+    --text-primary: #f0f0f0; --text-secondary: #c0c0c0; --text-accent: #ffd700; --text-muted: #777777;
+    --shadow: rgba(0,0,0,0.7); --score-color: #ffd700; --bolt-color: #ffd700;
+    --danger: #ff6b6b; --success: #4ade80; --primary: #d4a500; --primary-hover: #b89200;
+}
+body.theme-light-blue {
+    --bg-primary: #e8f0fe; --bg-secondary: #d4e2f7; --bg-card: #ffffff; --bg-input: #ffffff;
+    --bg-accent: #c5d8f0; --bg-hover: #dce6f5; --border-color: #b0c8e0;
+    --text-primary: #1a2332; --text-secondary: #2d3a4f; --text-accent: #1d4ed8; --text-muted: #5a6b7a;
+    --shadow: rgba(0,0,0,0.1); --score-color: #1d4ed8; --bolt-color: #f59e0b;
+    --danger: #dc2626; --success: #16a34a; --primary: #1d4ed8; --primary-hover: #1e40af;
+}
+body.theme-light-gray {
+    --bg-primary: #f0f2f5; --bg-secondary: #e4e7ec; --bg-card: #ffffff; --bg-input: #ffffff;
+    --bg-accent: #d5d8de; --bg-hover: #e8eaef; --border-color: #c5c8ce;
+    --text-primary: #1a1a2e; --text-secondary: #2d2d44; --text-accent: #4a4a6a; --text-muted: #6a6a8a;
+    --shadow: rgba(0,0,0,0.08); --score-color: #4a4a6a; --bolt-color: #d97706;
+    --danger: #dc2626; --success: #16a34a; --primary: #4a4a6a; --primary-hover: #3a3a5a;
+}
+body.theme-cream {
+    --bg-primary: #faf6f0; --bg-secondary: #f0ead9; --bg-card: #ffffff; --bg-input: #ffffff;
+    --bg-accent: #e8dccc; --bg-hover: #f5efe6; --border-color: #d4c8b8;
+    --text-primary: #2d241a; --text-secondary: #4a3d30; --text-accent: #8b6b4a; --text-muted: #8a7a6a;
+    --shadow: rgba(0,0,0,0.08); --score-color: #8b6b4a; --bolt-color: #b8860b;
+    --danger: #b91c1c; --success: #15803d; --primary: #8b6b4a; --primary-hover: #7a5d3e;
+}
+body.theme-emerald {
+    --bg-primary: #0a1f1a; --bg-secondary: #14332a; --bg-card: #1a3d32; --bg-input: #244d3f;
+    --bg-accent: #12302a; --bg-hover: #2d5a4a; --border-color: #2d5a4a;
+    --text-primary: #e8f0ec; --text-secondary: #b0c8c0; --text-accent: #4ade80; --text-muted: #7a9a8a;
+    --shadow: rgba(0,0,0,0.5); --score-color: #4ade80; --bolt-color: #fbbf24;
+    --danger: #f87171; --success: #34d399; --primary: #0d9488; --primary-hover: #0f766e;
+}
+body.theme-neon {
+    --bg-primary: #0a0a1a; --bg-secondary: #141430; --bg-card: #1a1a3a; --bg-input: #2a2a50;
+    --bg-accent: #121230; --bg-hover: #3a3a6a; --border-color: #3a3a7a;
+    --text-primary: #f0f0ff; --text-secondary: #c0c0ff; --text-accent: #a78bfa; --text-muted: #8888bb;
+    --shadow: rgba(0,0,0,0.6); --score-color: #a78bfa; --bolt-color: #f472b6;
+    --danger: #f87171; --success: #34d399; --primary: #7c3aed; --primary-hover: #6d28d9;
+}
+
+/* ==========================================================
+   ПРИМЕНЕНИЕ ПЕРЕМЕННЫХ
+========================================================== */
+body { background: var(--bg-primary); color: var(--text-primary); }
+.screen { background: var(--bg-primary); }
+.teamCard, .victoryTeam { background: var(--bg-card); border-color: var(--border-color); }
+.infoRow, .valueBar, .scorePanel, .scoreBoard3, #teamsContainer, .announcementPreview {
+    background: var(--bg-secondary); border-color: var(--border-color);
+}
+.playerSelect, .infoControl, .scoreRow input, .modalWindow, .announcementRow, .pickerRow, .playerTotalRow, .confirmRoundRow {
+    background: var(--bg-input); color: var(--text-primary);
+}
+.modalWindow { border-color: var(--border-color); }
+.playerTotalRow:active, .pickerRow:active { background: var(--bg-hover); }
+.menuLogo, .screenTitle, .gameLogo, .teamCard h3, .infoLabel, .modalWindow h2, #historyTable th,
+.announcementTitle, .rulesContent h3, .victoryTeamTitle { color: var(--text-accent); }
+.teamScore, #gameValue, .victoryTeamScore, .playerTotalRow span:nth-child(2), .confirmDelta, .victoryTimer {
+    color: var(--score-color);
+}
+.teamBolts, .victoryTeamBolts, .playerTotalRow span:last-child, .confirmBadge { color: var(--bolt-color); }
+.secondaryButton, .toggleButton { background: var(--bg-input); color: var(--text-primary); }
+.secondaryButton:active, .toggleButton:active { background: var(--bg-hover); }
+.primaryButton { background: var(--primary); color: #fff; }
+.primaryButton:active { background: var(--primary-hover); }
+.iconButton, .counterButton { background: var(--bg-accent); color: var(--text-accent); }
+#historyTable td { border-color: var(--border-color); }
+#historyTable tr:nth-child(even), .rulesTable tr:nth-child(even) { background: var(--bg-accent); }
+.victoryTeamWin { border-color: var(--text-accent); background: var(--bg-hover); }
+.scoreRow input:focus { background: var(--bg-hover); box-shadow: 0 0 0 3px var(--text-accent); border-color: var(--text-accent); }
+.timer-running { color: var(--text-primary); }
+.timer-paused { color: var(--danger) !important; }
+.settingsRow { border-color: var(--border-color); }
+.toggleButton.active { background: var(--primary); color: #fff; }
+
+/* Кнопки тем */
+.themeBtn[data-theme="blue"] { background: #0d2342; border-color: #264f78; }
+.themeBtn[data-theme="graphite"] { background: #1a1a2e; border-color: #4a4a6a; }
+.themeBtn[data-theme="black"] { background: #0a0a0a; border-color: #333333; }
+.themeBtn[data-theme="light-blue"] { background: #e8f0fe; border-color: #b0c8e0; }
+.themeBtn[data-theme="light-gray"] { background: #f0f2f5; border-color: #c5c8ce; }
+.themeBtn[data-theme="cream"] { background: #faf6f0; border-color: #d4c8b8; }
+.themeBtn[data-theme="emerald"] { background: #0a1f1a; border-color: #2d5a4a; }
+.themeBtn[data-theme="neon"] { background: #0a0a1a; border-color: #3a3a7a; }
+.themeBtn.active { border-color: var(--text-accent); transform: scale(1.15); box-shadow: 0 0 12px var(--text-accent); }
+.themePreview { color: var(--text-muted); }
+
+/* Светлые темы */
+body.theme-light-blue .primaryButton, body.theme-light-gray .primaryButton, body.theme-cream .primaryButton { color: #ffffff; }
+body.theme-light-blue .secondaryButton, body.theme-light-gray .secondaryButton, body.theme-cream .secondaryButton { color: var(--text-primary); }
+body.theme-light-blue .infoValue, body.theme-light-gray .infoValue, body.theme-cream .infoValue { color: var(--text-primary); }
+body.theme-light-blue .playerSelect, body.theme-light-gray .playerSelect, body.theme-cream .playerSelect { color: var(--text-primary); }
+body.theme-light-blue .menuLogo span, body.theme-light-gray .menuLogo span, body.theme-cream .menuLogo span { color: var(--text-primary); }
+body.theme-light-blue .modalWindow, body.theme-light-gray .modalWindow, body.theme-cream .modalWindow { box-shadow: 0 8px 32px var(--shadow); }
+body.theme-light-blue .teamCard, body.theme-light-gray .teamCard, body.theme-cream .teamCard { box-shadow: 0 2px 8px var(--shadow); }
+
+/* ==========================================================
+   БАЗОВЫЕ СТИЛИ
+========================================================== */
+.screen { display: none; width:100%; min-height:100dvh; padding:14px 16px 20px; flex-direction:column; animation:fade 0.22s ease; }
+.screen.active { display: flex; }
+@keyframes fade { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+.menuLogo { text-align:center; font-size:2rem; font-weight:700; letter-spacing:1.5px; margin:40px 0 36px; user-select:none; }
+.gameLogo { flex:1; text-align:center; font-size:1.25rem; font-weight:700; letter-spacing:1px; }
+.screenTitle { text-align:center; margin:12px 0 22px; font-size:1.4rem; }
+
+.primaryButton, .secondaryButton, .iconButton { border:none; cursor:pointer; transition:0.18s; font-family:inherit; }
+.primaryButton { width:100%; padding:15px; border-radius:14px; font-size:1.05rem; font-weight:600; margin-top:10px; }
+.primaryButton:active { transform:scale(0.97); }
+.secondaryButton { width:100%; padding:14px; border-radius:14px; margin-top:10px; font-size:1rem; }
+.secondaryButton:active { transform:scale(0.97); }
+.iconButton { width:44px; height:44px; border-radius:12px; font-size:1.3rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.iconButton:active { transform:scale(0.93); }
+button:disabled { opacity:0.45; cursor:not-allowed; }
+
+.menuButtons, .modeButtons, .playersButtons { width:100%; max-width:400px; margin:0 auto; }
+.topBar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.roundBar { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding:0 4px; position:relative; }
+#roundNumber, #roundNumber3 { font-size:1.2rem; font-weight:700; z-index:1; }
+#gameTimer, #gameTimer3 { position:absolute; left:50%; transform:translateX(-50%); font-size:1.2rem; font-weight:700; cursor:pointer; padding:6px 12px; border-radius:10px; }
+
+/* Teams */
+#teamsContainer { display:grid; grid-template-columns:1fr 1fr; gap:10px; border-radius:16px; padding:10px; margin-bottom:14px; border:2px solid var(--text-accent); cursor:pointer; }
+.teamCard { border-radius:12px; padding:12px 10px; }
+.teamCard h3 { text-align:center; font-size:0.95rem; margin-bottom:8px; }
+.teamPlayers { min-height:44px; line-height:1.5; text-align:center; font-size:0.95rem; margin-bottom:8px; }
+.teamBottom { display:flex; justify-content:space-between; align-items:center; }
+.teamScore { font-size:1.8rem; font-weight:700; }
+.teamBolts { font-size:1rem; }
+
+/* Info rows */
+.infoRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+.dealerRight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.infoLabel { font-weight:600; font-size:1rem; white-space:nowrap; }
+.infoValue { font-weight:600; font-size:1.05rem; color: var(--text-primary); }
+.infoControl { min-width:140px; max-width:55%; padding:8px 12px; border:none; border-radius:10px; font-size:1rem; outline:none; }
+
+/* Value bar */
+.valueBar { display:flex; justify-content:space-between; align-items:center; gap:12px; border:2px solid var(--border-color); border-radius:12px; padding:12px 14px; margin-bottom:14px; }
+#gameValue { font-size:1.4rem; font-weight:700; }
+#announcementButton { border:none; border-radius:10px; padding:10px 16px; font-size:1rem; cursor:pointer; white-space:nowrap; background:var(--bg-input); color:var(--text-primary); }
+#announcementButton:active { transform:scale(0.96); }
+
+/* Score panel */
+.scorePanel { border:2px solid var(--border-color); border-radius:14px; padding:14px; margin-bottom:16px; }
+.scoreRow { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
+.scoreRow:last-child { margin-bottom:0; }
+.scoreRow label { font-weight:600; font-size:1rem; white-space:nowrap; }
+.scoreRow input { width:110px; height:46px; border:3px solid var(--border-color); border-radius:12px; font-size:1.2rem; font-weight:600; text-align:center; outline:none; transition:border-color 0.2s, box-shadow 0.2s; }
+.scoreRow input:focus { border-color: var(--text-accent); box-shadow: 0 0 0 3px var(--text-accent); background: var(--bg-hover); }
+
+/* Специальные стили для двухстрочных меток в 4 игроках */
+.scoreRowMulti label {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    gap: 2px;
+}
+.scoreRowMulti label .scoreLabelTitle {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-accent);
+}
+.scoreRowMulti label .scoreLabelNames {
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    word-break: break-word;
+    line-height: 1.3;
+}
+.scoreRowMulti input {
+    flex-shrink: 0;
+    width: 110px;
+}
+
+.gameFooter { margin-top:auto; padding-top:8px; }
+
+/* ===== Поля выбора игроков на экране ===== */
+.playerRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: nowrap; /* гарантирует, что крестик не перенесётся */
+}
+.playerSelect {
+    flex: 1;
+    min-width: 0; /* чтобы не вылезал за пределы */
+    height: 48px;
+    border: 2px solid var(--text-accent);
+    border-radius: 12px;
+    font-size: 1.05rem;
+    padding: 0 14px;
+    outline: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+.playerSelect:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary);
+}
+.playerSelect:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary);
+}
+.removePlayerButton {
+    flex-shrink: 0; /* не сжимается */
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: #3a1f2b;
+    color: #ff6b6b;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+/* ===== Модалка выбора игрока — обводка для каждого имени ===== */
+.pickerRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 2px solid var(--text-accent);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.pickerRow:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary);
+}
+.pickerRow:active {
+    background: var(--bg-hover);
+}
+.pickerName {
+    font-size: 1.1rem;
+    flex: 1;
+}
+.pickerDelete {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: #3a1f2b;
+    color: #ff6b6b;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.newPlayerRow {
+    background: var(--primary);
+}
+.newPlayerRow .pickerName {
+    text-align: center;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* History */
+.modalHeader { text-align:center; margin-bottom:12px; }
+.modalHeader h2 { font-size:1.3rem; }
+.historyWrapper { flex:1; overflow:auto; margin:10px 0 16px; -webkit-overflow-scrolling:touch; }
+#historyTable { width:100%; border-collapse:collapse; font-size:0.9rem; }
+#historyTable th { padding:10px 6px; position:sticky; top:0; z-index:2; }
+#historyTable td { padding:10px 6px; text-align:center; border-bottom:1px solid var(--border-color); }
+.historyPenalty { display:block; color:var(--danger); font-size:0.8rem; margin-top:2px; }
+.historyTotal { color:var(--text-muted); font-size:0.85rem; font-weight:500; }
+.modalFooter { margin-top:auto; }
+
+/* Modals */
+.modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); justify-content:center; align-items:center; z-index:1000; padding:16px; }
+.modal.active { display:flex; }
+.modalWindow { width:100%; max-width:420px; max-height:90dvh; overflow-y:auto; border-radius:18px; padding:20px; border:2px solid var(--border-color); -webkit-overflow-scrolling:touch; }
+.modalWindow h2 { text-align:center; margin-bottom:18px; font-size:1.3rem; }
+.modalButtons { display:flex; gap:10px; margin-top:8px; }
+.modalButtons .primaryButton, .modalButtons .secondaryButton { margin-top:0; }
+
+/* Announcements */
+#announcementList { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+.announcementRow { display:flex; align-items:center; justify-content:space-between; gap:12px; border-radius:12px; padding:10px 12px; }
+.announcementTitle { font-size:1rem; }
+.announcementCounter { display:flex; align-items:center; gap:8px; }
+.counterButton { width:36px; height:36px; border:none; border-radius:8px; font-size:1.2rem; font-weight:700; cursor:pointer; }
+.counterValue { min-width:24px; text-align:center; font-size:1.1rem; font-weight:700; }
+.announcementPreview { display:flex; justify-content:space-between; align-items:center; border:2px solid var(--border-color); border-radius:12px; padding:12px 14px; margin-bottom:16px; font-weight:600; }
+#announcementTempGame { font-size:1.25rem; }
+
+/* Rules */
+.rulesWindow { max-width:520px; }
+.rulesContent { max-height:55dvh; overflow-y:auto; line-height:1.65; margin-bottom:16px; padding-right:4px; }
+.rulesContent h3 { margin:16px 0 8px; }
+.rulesContent p { margin-bottom:10px; }
+.rulesContent ul { padding-left:18px; margin-bottom:12px; }
+.rulesContent li { margin-bottom:6px; }
+.rulesTable { width:100%; border-collapse:collapse; font-size:0.85rem; margin:10px 0 14px; }
+.rulesTable th { padding:8px 6px; text-align:left; }
+.rulesTable td { padding:8px 6px; border-bottom:1px solid var(--border-color); }
+
+/* Victory */
+#victoryScreen { justify-content:center; align-items:center; text-align:center; }
+.victoryIcon { font-size:4.5rem; margin-bottom:12px; }
+#winnerTitle { font-size:2rem; margin-bottom:8px; }
+#winnerText { font-size:1.15rem; margin-bottom:20px; opacity:0.9; }
+.victoryTeams { display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+.victoryTeam { border:2px solid var(--border-color); border-radius:14px; padding:14px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; text-align:left; }
+.victoryTeamWin { border-color:var(--text-accent); box-shadow:0 0 0 1px var(--text-accent); }
+.victoryTeamLeft { display:flex; flex-direction:column; gap:2px; min-width:0; }
+.victoryTeamTitle { font-size:0.8rem; }
+.victoryTeamNames { font-weight:600; font-size:1.05rem; line-height:1.3; }
+.victoryTeamRight { display:flex; flex-direction:column; align-items:flex-end; flex-shrink:0; }
+.victoryTeamScore { font-size:1.6rem; font-weight:700; line-height:1.2; }
+.victoryTeamBolts { font-size:0.95rem; min-height:1.1em; }
+.victoryTimer { border:2px solid var(--border-color); border-radius:12px; padding:12px 16px; font-size:1.15rem; font-weight:600; text-align:center; }
+
+/* Game 3 */
+.scoreBoard3 { margin:14px 0; border:2px solid var(--text-accent); border-radius:14px; overflow:hidden; cursor:pointer; }
+.playerTotalRow { width:100%; display:grid; grid-template-columns:1fr 60px 50px; align-items:center; padding:13px 14px; border:none; border-bottom:1px solid var(--border-color); background:transparent; color:inherit; cursor:pointer; font-size:1.05rem; text-align:left; }
+.playerTotalRow:last-child { border-bottom:none; }
+.playerTotalRow span:first-child { font-weight:600; }
+.playerTotalRow span:nth-child(2) { text-align:center; font-size:1.35rem; font-weight:700; }
+.playerTotalRow span:last-child { text-align:right; min-width:40px; letter-spacing:1px; font-size:1rem; }
+#gameScreen3 .scorePanel { margin-top:18px; }
+#gameScreen3 .scoreRow { display:grid; grid-template-columns:1fr 28px 90px; align-items:center; gap:10px; margin-bottom:12px; }
+#gameScreen3 .scoreRow label { font-size:16px; font-weight:600; }
+#gameScreen3 input { text-align:center; }
+
+/* Confirm round */
+.confirmRoundList { display:flex; flex-direction:column; gap:8px; }
+.confirmRoundRow { display:flex; align-items:center; justify-content:space-between; gap:10px; border-radius:10px; padding:12px 14px; font-weight:600; }
+.confirmDelta { font-size:1.15rem; margin-left:auto; }
+.confirmTotal { color:var(--text-muted); font-size:0.9rem; font-weight:500; }
+.confirmNote { color:var(--danger); font-size:0.85rem; padding:0 4px 4px; }
+.confirmBadge { text-align:center; margin-top:12px; font-size:1.1rem; font-weight:600; }
+
+/* Continue buttons */
+.continueButton { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:14px 15px; min-height:58px; }
+.continueButton .continueLabel { font-size:1.05rem; font-weight:600; }
+.continueButton .continueScoreInside { font-size:1.05rem; font-weight:700; min-height:1.1em; line-height:1.2; }
+.continueButton:disabled .continueScoreInside { display:none; }
+
+/* Settings */
+.settingsRow { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-bottom:1px solid var(--border-color); }
+.settingsRow:last-child { border-bottom:none; }
+.settingsLabel { font-weight:600; font-size:1.05rem; }
+.settingsToggle { display:flex; gap:6px; }
+.toggleButton { padding:8px 16px; border:none; border-radius:8px; font-weight:600; cursor:pointer; transition:0.2s; }
+.settingsThemeButtons { display:flex; gap:8px; }
+.themeBtn { width:40px; height:40px; border-radius:50%; border:3px solid transparent; cursor:pointer; font-size:1.2rem; transition:0.2s; background:transparent; }
+.themeBtn:active { transform:scale(0.9); }
+.themePreview { min-width:80px; text-align:right; font-weight:500; }
+.settingsActions { display:flex; gap:12px; margin-top:18px; }
+.settingsActions .primaryButton, .settingsActions .secondaryButton { margin-top:0; }
+
+/* Toast */
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--bg-card); color:var(--text-primary); padding:14px 28px; border-radius:14px; border:2px solid var(--text-accent); box-shadow:0 8px 32px var(--shadow); font-weight:600; font-size:1.05rem; z-index:9999; opacity:0; transition:opacity 0.3s ease, transform 0.3s ease; pointer-events:none; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:6px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text-muted); }
+
+/* Safe area */
+@supports (padding: max(0px)) {
+    .screen { padding-left:max(16px, env(safe-area-inset-left)); padding-right:max(16px, env(safe-area-inset-right)); padding-bottom:max(20px, env(safe-area-inset-bottom)); }
+}
+@media (max-width:380px) {
+    .teamScore { font-size:1.55rem; }
+    .scoreRow input { width:96px; }
+    .infoControl { min-width:120px; }
+}

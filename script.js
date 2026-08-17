@@ -790,6 +790,7 @@ function saveRound() {
     gameState.activePlayerIndex = Number(activePlayerSelect.value);
     const playerPoints = Number(playerScoreInput.value);
     const opponentPoints = Number(opponentScoreInput.value);
+
     if (Number.isNaN(playerPoints) || Number.isNaN(opponentPoints)) {
         alert("Введите очки.");
         return;
@@ -798,23 +799,32 @@ function saveRound() {
         alert("Очки не могут быть отрицательными.");
         return;
     }
+
+    // ✅ Сохраняем снапшот перед любой раздачей
+    stateSnapshots.push(snapshotGameState());
+
+    // Неправильная раздача (0:0)
     if (playerPoints === 0 && opponentPoints === 0) {
         processRound(0, 0);
         return;
     }
+
     if (playerPoints === 0 && opponentPoints > 0) {
         alert("Играющий не может набрать 0 очков.\nМинимум — 2.");
+        stateSnapshots.pop(); // удаляем лишний снапшот
         return;
     }
+
     if (playerPoints + opponentPoints !== gameState.gameValue) {
         alert(`Сумма очков должна быть ${gameState.gameValue}.`);
+        stateSnapshots.pop(); // удаляем лишний снапшот
         return;
     }
-    stateSnapshots.push(snapshotGameState());
+
+    // Если всё ок, оставляем снапшот и сохраняем
     pendingRoundSnapshot = snapshotGameState();
     processRound(playerPoints, opponentPoints);
 }
-
 /* ==========================================================
    22. PROCESS ROUND (4 players)
 ========================================================== */
@@ -1429,7 +1439,6 @@ function updateInputLabels3() {
 
 function saveRound3() {
     gameState.activePlayerIndex = Number(document.getElementById("activePlayerSelect3").value);
-    pendingRoundSnapshot = snapshotGameState();
 
     const p1 = Number(document.getElementById("player1ScoreInput3").value);
     const p2 = Number(document.getElementById("player2ScoreInput3").value);
@@ -1443,8 +1452,12 @@ function saveRound3() {
         alert("Очки не могут быть отрицательными.");
         return;
     }
+
+    // ✅ Сохраняем снапшот перед любой раздачей
+    stateSnapshots.push(snapshotGameState());
+
+    // Неправильная раздача (0:0:0)
     if (p1 === 0 && p2 === 0 && p3 === 0) {
-        stateSnapshots.push(snapshotGameState());
         processRound3(0, 0, 0);
         return;
     }
@@ -1453,13 +1466,17 @@ function saveRound3() {
     const scores = [p1, p2, p3];
     if (scores[active] === 0) {
         alert("Играющий не может набрать 0 очков.\nМинимум — 2.");
+        stateSnapshots.pop();
         return;
     }
     if (p1 + p2 + p3 !== gameState.gameValue) {
         alert(`Сумма очков должна быть ${gameState.gameValue}.`);
+        stateSnapshots.pop();
         return;
     }
-    stateSnapshots.push(snapshotGameState());
+
+    // Всё ок
+    pendingRoundSnapshot = snapshotGameState();
     processRound3(p1, p2, p3);
 }
 

@@ -16,7 +16,7 @@ body {
 }
 
 /* ==========================================================
-   THEMES
+   THEMES (стандартные)
 ========================================================== */
 body.theme-blue {
     --bg-primary: #0d2342; --bg-secondary: #16304d; --bg-card: #1a3a5d; --bg-input: #21476d;
@@ -73,6 +73,22 @@ body.theme-neon {
     --text-primary: #f0f0ff; --text-secondary: #c0c0ff; --text-accent: #a78bfa; --text-muted: #8888bb;
     --shadow: rgba(0,0,0,0.6); --score-color: #a78bfa; --bolt-color: #f472b6;
     --danger: #f87171; --success: #34d399; --primary: #7c3aed; --primary-hover: #6d28d9;
+}
+/* Пользовательская тема */
+body.theme-custom {
+    /* переменные задаются через JS, здесь только базовые значения */
+    --bg-secondary: #1a2a3a;
+    --bg-input: #2a3a4a;
+    --bg-accent: #1a2a3a;
+    --bg-hover: #3a4a5a;
+    --shadow: rgba(0,0,0,0.4);
+    --text-secondary: #c8d6e5;
+    --text-muted: #94a3b8;
+    --score-color: var(--text-accent);
+    --bolt-color: var(--text-accent);
+    --danger: #ff6b6b;
+    --success: #4ade80;
+    --primary-hover: var(--primary);
 }
 
 /* ==========================================================
@@ -231,11 +247,11 @@ button:disabled { opacity:0.45; cursor:not-allowed; }
     align-items: center;
     gap: 10px;
     margin-bottom: 12px;
-    flex-wrap: nowrap; /* гарантирует, что крестик не перенесётся */
+    flex-wrap: nowrap;
 }
 .playerSelect {
     flex: 1;
-    min-width: 0; /* чтобы не вылезал за пределы */
+    min-width: 0;
     height: 48px;
     border: 2px solid var(--text-accent);
     border-radius: 12px;
@@ -258,7 +274,7 @@ button:disabled { opacity:0.45; cursor:not-allowed; }
     box-shadow: 0 0 0 4px var(--primary);
 }
 .removePlayerButton {
-    flex-shrink: 0; /* не сжимается */
+    flex-shrink: 0;
     width: 44px;
     height: 44px;
     border: none;
@@ -290,10 +306,7 @@ button:disabled { opacity:0.45; cursor:not-allowed; }
 .pickerRow:active {
     background: var(--bg-hover);
 }
-.pickerName {
-    font-size: 1.1rem;
-    flex: 1;
-}
+.pickerName { font-size:1.1rem; flex:1; }
 .pickerDelete {
     width: 40px;
     height: 40px;
@@ -308,14 +321,8 @@ button:disabled { opacity:0.45; cursor:not-allowed; }
     justify-content: center;
     flex-shrink: 0;
 }
-.newPlayerRow {
-    background: var(--primary);
-}
-.newPlayerRow .pickerName {
-    text-align: center;
-    font-weight: 600;
-    color: #fff;
-}
+.newPlayerRow { background:var(--primary); }
+.newPlayerRow .pickerName { text-align:center; font-weight:600; color:#fff; }
 
 /* History */
 .modalHeader { text-align:center; margin-bottom:12px; }
@@ -411,6 +418,148 @@ button:disabled { opacity:0.45; cursor:not-allowed; }
 .themePreview { min-width:80px; text-align:right; font-weight:500; }
 .settingsActions { display:flex; gap:12px; margin-top:18px; }
 .settingsActions .primaryButton, .settingsActions .secondaryButton { margin-top:0; }
+
+/* ==========================================================
+   ПОЛЬЗОВАТЕЛЬСКИЕ ТЕМЫ - ДОПОЛНИТЕЛЬНЫЕ СТИЛИ
+========================================================== */
+
+.themeColorRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.themeColorRow label {
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+.themeColorRow input[type="color"] {
+    width: 48px;
+    height: 40px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    background: none;
+    padding: 2px;
+}
+.themeColorRow input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+.themeColorRow input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 6px;
+}
+
+.themePreviewContainer {
+    margin: 12px 0;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border-radius: 14px;
+    border: 2px solid var(--border-color);
+}
+.themePreviewCard {
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+.themePreviewCard .previewTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-accent);
+    text-align: center;
+    margin-bottom: 12px;
+}
+.themePreviewCard .previewBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg-card);
+    padding: 12px;
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+}
+.themePreviewCard .previewText {
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+.themePreviewCard .previewAccent {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-accent);
+}
+.themePreviewCard .previewButton {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: none;
+    cursor: default;
+}
+.themePreviewCard .previewBorder {
+    margin-top: 10px;
+    padding: 8px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.customThemeItem {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-input);
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 2px solid var(--border-color);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: 0.15s;
+}
+.customThemeItem:hover {
+    border-color: var(--text-accent);
+}
+.customThemeItem.active {
+    border-color: var(--text-accent);
+    background: var(--bg-hover);
+}
+.customThemeItem .themeName {
+    font-weight: 500;
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.customThemeItem .themeActions {
+    display: flex;
+    gap: 4px;
+}
+.customThemeItem .themeActions button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 2px 4px;
+    border-radius: 4px;
+    color: var(--text-muted);
+    transition: 0.15s;
+}
+.customThemeItem .themeActions button:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+.customThemeItem .themeActions .deleteBtn:hover {
+    color: var(--danger);
+}
 
 /* Toast */
 .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--bg-card); color:var(--text-primary); padding:14px 28px; border-radius:14px; border:2px solid var(--text-accent); box-shadow:0 8px 32px var(--shadow); font-weight:600; font-size:1.05rem; z-index:9999; opacity:0; transition:opacity 0.3s ease, transform 0.3s ease; pointer-events:none; white-space:nowrap; }

@@ -49,12 +49,16 @@
 <div id="settingsModal" class="modal">
     <div class="modalWindow">
         <h2>⚙️ Настройки</h2>
+
+        <!-- Звук -->
         <div class="settingsRow">
             <label class="settingsLabel">🔊 Звук</label>
             <div class="settingsToggle">
                 <button id="soundToggle" class="toggleButton active" onclick="toggleSound()">Вкл</button>
             </div>
         </div>
+
+        <!-- Тема -->
         <div class="settingsRow">
             <label class="settingsLabel">🎨 Тема</label>
             <div class="settingsThemeButtons">
@@ -69,9 +73,78 @@
             </div>
             <span id="themePreview" class="themePreview">🔵 Синяя</span>
         </div>
+
+        <!-- Мои темы -->
+        <div class="settingsRow" style="flex-direction:column; align-items:stretch; gap:8px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <span class="settingsLabel">📁 Мои темы</span>
+                <button class="primaryButton" onclick="openThemeEditor()" style="width:auto; padding:6px 14px; font-size:0.9rem; margin:0;">➕ Создать</button>
+            </div>
+            <div id="customThemesList" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:4px;">
+                <!-- Список будет заполнен JS -->
+            </div>
+        </div>
+
         <div class="settingsActions">
             <button class="secondaryButton" onclick="closeSettings()" style="flex:1;">❌ Отмена</button>
             <button class="primaryButton" onclick="applySettings()" style="flex:2;">✅ Применить</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== РЕДАКТОР ТЕМ ===================== -->
+<div id="themeEditorModal" class="modal">
+    <div class="modalWindow" style="max-width: 480px;">
+        <h2>🎨 Создать тему</h2>
+
+        <!-- Имя темы -->
+        <div class="settingsRow" style="border-bottom:none; padding-bottom:4px;">
+            <label class="settingsLabel" style="min-width:80px;">Название</label>
+            <input id="themeNameInput" type="text" placeholder="Моя тема" style="flex:1; padding:8px 12px; border-radius:8px; border:2px solid var(--border-color); background:var(--bg-input); color:var(--text-primary); font-size:1rem;">
+        </div>
+
+        <!-- Цвета -->
+        <div class="themeColorRow">
+            <label>🌑 Основной фон</label>
+            <input type="color" id="colorBgPrimary" value="#0d2342">
+        </div>
+        <div class="themeColorRow">
+            <label>📦 Фон блоков</label>
+            <input type="color" id="colorBgCard" value="#1a3a5d">
+        </div>
+        <div class="themeColorRow">
+            <label>📝 Основной текст</label>
+            <input type="color" id="colorTextPrimary" value="#ffffff">
+        </div>
+        <div class="themeColorRow">
+            <label>✨ Акцентный цвет</label>
+            <input type="color" id="colorTextAccent" value="#ffd54d">
+        </div>
+        <div class="themeColorRow">
+            <label>🔘 Цвет кнопок</label>
+            <input type="color" id="colorPrimary" value="#1d4ed8">
+        </div>
+        <div class="themeColorRow">
+            <label>🖼️ Цвет обводок</label>
+            <input type="color" id="colorBorder" value="#264f78">
+        </div>
+
+        <!-- Превью -->
+        <div class="themePreviewContainer">
+            <div class="themePreviewCard" id="themePreviewCard">
+                <div class="previewTitle">♠ BELOT CLUB ♣</div>
+                <div class="previewBlock">
+                    <div class="previewText">Основной текст</div>
+                    <div class="previewAccent">Акцентный текст</div>
+                    <div class="previewButton">Кнопка</div>
+                </div>
+                <div class="previewBorder">Обводка</div>
+            </div>
+        </div>
+
+        <div class="modalButtons" style="margin-top:12px;">
+            <button class="secondaryButton" onclick="closeThemeEditor()" style="flex:1;">Отмена</button>
+            <button class="primaryButton" onclick="saveCustomTheme()" style="flex:2;">💾 Сохранить</button>
         </div>
     </div>
 </div>

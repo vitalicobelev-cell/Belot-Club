@@ -35,6 +35,30 @@ function saveSettings() {
 }
 
 function applyTheme(theme) {
+    // Проверяем, является ли тема пользовательской
+    if (theme && theme.startsWith('custom_')) {
+        const index = parseInt(theme.split('_')[1]);
+        const themes = loadCustomThemes();
+        if (themes[index]) {
+            applyThemeColors(themes[index].colors);
+            document.body.className = 'theme-custom';
+            // Сохраняем идентификатор
+            try {
+                localStorage.setItem('belot_theme', theme);
+            } catch (e) {}
+            // Обновляем превью в настройках
+            updateSettingsUI();
+            return;
+        } else {
+            // Если тема не найдена, сбрасываем на blue
+            settings.theme = 'blue';
+            saveSettings();
+            applyTheme('blue');
+            return;
+        }
+    }
+
+    // Стандартные темы
     document.body.className = `theme-${theme}`;
     const preview = document.getElementById("themePreview");
     if (preview) {
@@ -56,6 +80,7 @@ function applyTheme(theme) {
     try {
         localStorage.setItem('belot_theme', theme);
     } catch (e) {}
+    updateSettingsUI();
 }
 
 const savedTheme = localStorage.getItem('belot_theme');
@@ -67,8 +92,251 @@ if (savedTheme && savedTheme !== settings.theme) {
 }
 
 /* ==========================================================
+   ПОЛЬЗОВАТЕЛЬСКИЕ ТЕМЫ
+========================================================== */
+
+const CUSTOM_THEMES_KEY = "belot_custom_themes";
+
+// Загружаем пользовательские темы
+function loadCustomThemes() {
+    try {
+        const data = localStorage.getItem(CUSTOM_THEMES_KEY);
+        return data ? JSON.parse(data) : [];
+    } catch (e) { return []; }
+}
+
+// Сохраняем список тем
+function saveCustomThemes(themes) {
+    localStorage.setItem(CUSTOM_THEMES_KEY, JSON.stringify(themes));
+    renderCustomThemesList();
+}
+
+// Отображаем список в настройках
+function renderCustomThemesList() {
+    const container = document.getElementById("customThemesList");
+    if (!container) return;
+    const themes = loadCustomThemes();
+    if (themes.length === 0) {
+        container.innerHTML = '<span style="color:var(--text-muted); font-size:0.9rem;">Нет сохранённых тем</span>';
+        return;
+    }
+    container.innerHTML = themes.map((theme, idx) => {
+        const isActive = settings.theme === `custom_${idx}`;
+        return `
+            <div class="customThemeItem ${isActive ? 'active' : ''}" onclick="applyCustomTheme(${idx})">
+                <span class="themeName">${theme.name}</span>
+                <div class="themeActions">
+                    <button onclick="event.stopPropagation(); editCustomTheme(${idx})" title="Редактировать">✏️</button>
+                    <button class="deleteBtn" onclick="event.stopPropagation(); deleteCustomTheme(${idx})" title="Удалить">✕</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Открыть редактор (для новой или для редактирования)
+function openThemeEditor(index = null) {
+    const modal = document.getElementById("themeEditorModal");
+    const nameInput = document.getElementById("themeNameInput");
+    const colors = {
+        bgPrimary: document.getElementById("colorBgPrimary"),
+        bgCard: document.getElementById("colorBgCard"),
+        textPrimary: document.getElementById("colorTextPrimary"),
+        textAccent: document.getElementById("colorTextAccent"),
+        primary: document.getElementById("colorPrimary"),
+        border: document.getElementById("colorBorder"),
+    };
+
+    if (index !== null) {
+        // Редактирование существующей темы
+        const themes = loadCustomThemes();
+        const theme = themes[index];
+        if (!theme) return;
+        nameInput.value = theme.name;
+        colors.bgPrimary.value = theme.colors.bgPrimary;
+        colors.bgCard.value = theme.colors.bgCard;
+        colors.textPrimary.value = theme.colors.textPrimary;
+        colors.textAccent.value = theme.colors.textAccent;
+        colors.primary.value = theme.colors.primary;
+        colors.border.value = theme.colors.border;
+        // Сохраняем индекс для обновления
+        modal.dataset.editIndex = index;
+    } else {
+        // Новая тема – берём цвета из текущей темы
+        const current = getCurrentThemeColors();
+        nameInput.value = "";
+        colors.bgPrimary.value = current.bgPrimary || "#0d2342";
+        colors.bgCard.value = current.bgCard || "#1a3a5d";
+        colors.textPrimary.value = current.textPrimary || "#ffffff";
+        colors.textAccent.value = current.textAccent || "#ffd54d";
+        colors.primary.value = current.primary || "#1d4ed8";
+        colors.border.value = current.border || "#264f78";
+        delete modal.dataset.editIndex;
+    }
+
+    // Обновляем превью при каждом изменении цвета
+    const inputs = Object.values(colors);
+    inputs.forEach(inp => {
+        inp.removeEventListener('input', updateThemePreview);
+        inp.addEventListener('input', updateThemePreview);
+    });
+    updateThemePreview();
+
+    modal.classList.add("active");
+}
+
+// Обновить превью-макет
+function updateThemePreview() {
+    const card = document.getElementById("themePreviewCard");
+    if (!card) return;
+    const bgPrimary = document.getElementById("colorBgPrimary").value;
+    const bgCard = document.getElementById("colorBgCard").value;
+    const textPrimary = document.getElementById("colorTextPrimary").value;
+    const textAccent = document.getElementById("colorTextAccent").value;
+    const primary = document.getElementById("colorPrimary").value;
+    const border = document.getElementById("colorBorder").value;
+
+    // Применяем временные стили к превью
+    card.style.setProperty('--bg-primary', bgPrimary);
+    card.style.setProperty('--bg-card', bgCard);
+    card.style.setProperty('--text-primary', textPrimary);
+    card.style.setProperty('--text-accent', textAccent);
+    card.style.setProperty('--primary', primary);
+    card.style.setProperty('--border-color', border);
+
+    // Дополнительно обновляем элементы в превью
+    card.querySelector('.previewTitle').style.color = textAccent;
+    card.querySelector('.previewText').style.color = textPrimary;
+    card.querySelector('.previewAccent').style.color = textAccent;
+    card.querySelector('.previewButton').style.background = primary;
+    card.querySelector('.previewBorder').style.borderColor = border;
+    // Фон карточки
+    card.style.background = bgPrimary;
+    card.style.borderColor = border;
+    const block = card.querySelector('.previewBlock');
+    if (block) {
+        block.style.background = bgCard;
+        block.style.borderColor = border;
+    }
+}
+
+// Получить цвета текущей темы (для предзаполнения)
+function getCurrentThemeColors() {
+    // Считываем из активной темы
+    const computed = getComputedStyle(document.body);
+    return {
+        bgPrimary: computed.getPropertyValue('--bg-primary').trim() || '#0d2342',
+        bgCard: computed.getPropertyValue('--bg-card').trim() || '#1a3a5d',
+        textPrimary: computed.getPropertyValue('--text-primary').trim() || '#ffffff',
+        textAccent: computed.getPropertyValue('--text-accent').trim() || '#ffd54d',
+        primary: computed.getPropertyValue('--primary').trim() || '#1d4ed8',
+        border: computed.getPropertyValue('--border-color').trim() || '#264f78',
+    };
+}
+
+// Применить цвета (без сохранения в настройки)
+function applyThemeColors(colors) {
+    const root = document.documentElement;
+    root.style.setProperty('--bg-primary', colors.bgPrimary);
+    root.style.setProperty('--bg-card', colors.bgCard);
+    root.style.setProperty('--text-primary', colors.textPrimary);
+    root.style.setProperty('--text-accent', colors.textAccent);
+    root.style.setProperty('--primary', colors.primary);
+    root.style.setProperty('--border-color', colors.border);
+    // Для остальных переменных используем fallback стандартной темы (blue)
+    // Можно задать производные, но для простоты оставим как есть
+    // При желании можно добавить вычисление вторичных цветов
+}
+
+// Сохранить пользовательскую тему
+function saveCustomTheme() {
+    const nameInput = document.getElementById("themeNameInput");
+    const name = nameInput.value.trim();
+    if (!name) {
+        alert("Введите название темы.");
+        return;
+    }
+
+    const colors = {
+        bgPrimary: document.getElementById("colorBgPrimary").value,
+        bgCard: document.getElementById("colorBgCard").value,
+        textPrimary: document.getElementById("colorTextPrimary").value,
+        textAccent: document.getElementById("colorTextAccent").value,
+        primary: document.getElementById("colorPrimary").value,
+        border: document.getElementById("colorBorder").value,
+    };
+
+    const themes = loadCustomThemes();
+    const modal = document.getElementById("themeEditorModal");
+    const editIndex = modal.dataset.editIndex;
+
+    if (editIndex !== undefined && editIndex !== null) {
+        // Редактируем существующую
+        const idx = parseInt(editIndex);
+        if (!isNaN(idx) && themes[idx]) {
+            themes[idx].name = name;
+            themes[idx].colors = colors;
+        }
+    } else {
+        // Новая тема
+        themes.push({ name, colors });
+    }
+
+    saveCustomThemes(themes);
+    closeThemeEditor();
+    // Применяем сохранённую тему (последнюю)
+    applyCustomTheme(themes.length - 1);
+    showToast('Тема сохранена! ✅');
+}
+
+// Применить пользовательскую тему по индексу
+function applyCustomTheme(index) {
+    const themes = loadCustomThemes();
+    if (!themes[index]) return;
+    const theme = themes[index];
+    // Сохраняем идентификатор как "custom_индекс"
+    settings.theme = `custom_${index}`;
+    // Применяем цвета
+    applyThemeColors(theme.colors);
+    document.body.className = 'theme-custom';
+    saveSettings();
+    renderCustomThemesList();
+    updateSettingsUI();
+    showToast(`Тема "${theme.name}" применена`);
+}
+
+// Удалить пользовательскую тему
+function deleteCustomTheme(index) {
+    if (!confirm("Удалить эту тему?")) return;
+    const themes = loadCustomThemes();
+    if (!themes[index]) return;
+    themes.splice(index, 1);
+    saveCustomThemes(themes);
+    // Если активная была удалена – переключаем на стандартную
+    if (settings.theme === `custom_${index}`) {
+        settings.theme = 'blue';
+        applyTheme('blue');
+        saveSettings();
+    }
+    renderCustomThemesList();
+    updateSettingsUI();
+    showToast('Тема удалена');
+}
+
+// Редактировать тему
+function editCustomTheme(index) {
+    openThemeEditor(index);
+}
+
+// Закрыть редактор
+function closeThemeEditor() {
+    document.getElementById("themeEditorModal").classList.remove("active");
+}
+
+/* ==========================================================
    1. CONSTANTS
 ========================================================== */
+
 
 const PLAYERS_DB_KEY = "belot_players";
 const SAVE_KEY_4 = "belotClubSave4";
@@ -309,7 +577,7 @@ function stopTimer() {
 }
 
 function toggleTimer() {
-    playSound('click'); // звук на старт/паузу
+    playSound('click');
     if (gameState.timerRunning) stopTimer();
     else startTimer();
 }
@@ -441,7 +709,7 @@ function openPlayerPicker(index) {
 }
 
 function selectPlayer(name) {
-    playSound('click'); // звук при выборе имени
+    playSound('click');
     const field = document.getElementById(`playerSelect${currentPickerIndex}`);
     if (!field) return;
     field.dataset.value = name;
@@ -667,7 +935,6 @@ function applyAnnouncements() {
     updateScoreHints();
     updateScoreHints3();
     document.getElementById("announcementModal").classList.remove("active");
-    // Фокус на поле Соперников (сначала соперники, потом играющий)
     if (gameState.mode === 4) {
         document.getElementById("opponentScoreInput")?.focus();
     } else {
@@ -755,25 +1022,19 @@ function updateScoreHints() {
     const gameVal = gameState.gameValue;
 
     if (playerVal !== null && opponentVal !== null && !isNaN(playerVal) && !isNaN(opponentVal) && playerVal >= 0 && opponentVal >= 0) {
-        // Оба поля заполнены
         if (playerVal + opponentVal === gameVal) {
             playerScoreInput.placeholder = "";
             opponentScoreInput.placeholder = "";
-        } else {
-            // Можно показать предупреждение, но не будем
         }
     } else if (playerVal !== null && !isNaN(playerVal) && playerVal >= 0) {
-        // Заполнено только поле играющего
         const remainder = gameVal - playerVal;
         opponentScoreInput.placeholder = remainder >= 0 ? String(remainder) : "";
         playerScoreInput.placeholder = "";
     } else if (opponentVal !== null && !isNaN(opponentVal) && opponentVal >= 0) {
-        // Заполнено только поле соперника
         const remainder = gameVal - opponentVal;
         playerScoreInput.placeholder = remainder >= 0 ? String(remainder) : "";
         opponentScoreInput.placeholder = "";
     } else {
-        // Ничего не заполнено
         playerScoreInput.placeholder = "";
         opponentScoreInput.placeholder = "";
     }
@@ -800,10 +1061,8 @@ function saveRound() {
         return;
     }
 
-    // ✅ Сохраняем снапшот перед любой раздачей
     stateSnapshots.push(snapshotGameState());
 
-    // Неправильная раздача (0:0)
     if (playerPoints === 0 && opponentPoints === 0) {
         processRound(0, 0);
         return;
@@ -811,20 +1070,20 @@ function saveRound() {
 
     if (playerPoints === 0 && opponentPoints > 0) {
         alert("Играющий не может набрать 0 очков.\nМинимум — 2.");
-        stateSnapshots.pop(); // удаляем лишний снапшот
+        stateSnapshots.pop();
         return;
     }
 
     if (playerPoints + opponentPoints !== gameState.gameValue) {
         alert(`Сумма очков должна быть ${gameState.gameValue}.`);
-        stateSnapshots.pop(); // удаляем лишний снапшот
+        stateSnapshots.pop();
         return;
     }
 
-    // Если всё ок, оставляем снапшот и сохраняем
     pendingRoundSnapshot = snapshotGameState();
     processRound(playerPoints, opponentPoints);
 }
+
 /* ==========================================================
    22. PROCESS ROUND (4 players)
 ========================================================== */
@@ -847,7 +1106,6 @@ function processRound(playerPoints, opponentPoints) {
     let team2Note = "";
     let result = "normal";
 
-    // Неправильная раздача (0:0)
     if (playerPoints === 0 && opponentPoints === 0) {
         result = "redeal";
         if (gameState.dealerIndex === 0 || gameState.dealerIndex === 2) {
@@ -858,7 +1116,6 @@ function processRound(playerPoints, opponentPoints) {
             team2Note = "-10 неправильная";
         }
     }
-    // Капот
     else if (opponentPoints === 0) {
         result = "capot";
         if (activeTeam === 1) {
@@ -871,7 +1128,6 @@ function processRound(playerPoints, opponentPoints) {
             team1Note = "-10 нет взятки";
         }
     }
-    // Болт
     else if (playerPoints > 0 && playerPoints < Math.ceil(gameState.gameValue / 2)) {
         result = "bolt";
         if (activeTeam === 1) {
@@ -884,7 +1140,6 @@ function processRound(playerPoints, opponentPoints) {
             team2Note = `⚡ ${playerPoints}`;
         }
     }
-    // Обычная игра
     else {
         if (activeTeam === 1) {
             team1Delta = playerPoints;
@@ -895,7 +1150,6 @@ function processRound(playerPoints, opponentPoints) {
         }
     }
 
-    // Три болта → -10
     if (gameState.team1.bolts >= 3) {
         gameState.team1.score -= 10;
         gameState.team1.bolts = 0;
@@ -944,7 +1198,6 @@ function processRound(playerPoints, opponentPoints) {
     if (!hadWinner) {
         showRoundConfirm();
         playSound(lastRoundResultSound());
-        // Автонаводка после подтверждения
         setTimeout(() => {
             activePlayerSelect.focus();
             setTimeout(() => playerScoreInput.focus(), 100);
@@ -1341,6 +1594,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateTimer();
     updateContinueButtons();
     updateChangeDealerButtons();
+    renderCustomThemesList();
 
     const select4 = document.getElementById("activePlayerSelect");
     if (select4) {
@@ -1453,10 +1707,8 @@ function saveRound3() {
         return;
     }
 
-    // ✅ Сохраняем снапшот перед любой раздачей
     stateSnapshots.push(snapshotGameState());
 
-    // Неправильная раздача (0:0:0)
     if (p1 === 0 && p2 === 0 && p3 === 0) {
         processRound3(0, 0, 0);
         return;
@@ -1475,7 +1727,6 @@ function saveRound3() {
         return;
     }
 
-    // Всё ок
     pendingRoundSnapshot = snapshotGameState();
     processRound3(p1, p2, p3);
 }
@@ -1493,7 +1744,6 @@ function processRound3(p1, p2, p3) {
     const notes = ["", "", ""];
     let result = "normal";
 
-    // 0:0:0
     if (p1 === 0 && p2 === 0 && p3 === 0) {
         result = "redeal";
         const dealer = gameState.dealerIndex;
@@ -1520,7 +1770,6 @@ function processRound3(p1, p2, p3) {
 
     const played = activePoints >= maxOpponent;
 
-    // Сыграл
     if (played) {
         for (let i = 0; i < 3; i++) {
             deltas[i] = scores[i];
@@ -1535,7 +1784,6 @@ function processRound3(p1, p2, p3) {
         return;
     }
 
-    // Не сыграл → болт
     result = "bolt";
     gameState.players[active].bolts++;
     notes[active] = `⚡ ${activePoints}`;
@@ -1571,7 +1819,6 @@ function processRound3(p1, p2, p3) {
         return;
     }
 
-    // Равные соперники — выбор
     pendingTieData = { scores, active, activePoints, topOpponents, deltas, notes, result };
     showTieChoiceModal(topOpponents);
 }
@@ -1900,7 +2147,7 @@ function undoLastRound() {
         return;
     }
     if (!confirm("Отменить последнюю раздачу?")) return;
-    playSound('click'); // звук отмены
+    playSound('click');
     const snap = stateSnapshots.pop();
     restoreGameState(snap);
     saveGame();
@@ -2069,7 +2316,7 @@ function launchConfetti() {
 }
 
 /* ==========================================================
-   SETTINGS UI
+   SETTINGS UI (дополненная функция updateSettingsUI)
 ========================================================== */
 
 let pendingTheme = settings.theme;
@@ -2097,33 +2344,59 @@ function applySettings() {
 
 function selectTheme(theme) {
     pendingTheme = theme;
+    // Применяем стандартную тему для предпросмотра (без сохранения)
     applyTheme(theme);
     updateSettingsUI();
     playSound('click');
 }
 
 function updateSettingsUI() {
+    // Звук
     const toggle = document.getElementById("soundToggle");
     if (toggle) {
         toggle.textContent = settings.soundEnabled ? "Вкл" : "Выкл";
         toggle.classList.toggle("active", settings.soundEnabled);
     }
+
+    // Тема - предпросмотр (для стандартных)
     const preview = document.getElementById("themePreview");
     if (preview) {
-        const themes = {
-            blue: "🔵 Синяя",
-            graphite: "⚪ Графитовая",
-            black: "⚫ Чёрная",
-            "light-blue": "☀️ Светло-синяя",
-            "light-gray": "🌤️ Светло-серая",
-            cream: "🧈 Кремовая",
-            emerald: "🟢 Изумрудная",
-            neon: "💜 Неоновая"
-        };
-        preview.textContent = themes[pendingTheme] || "🔵 Синяя";
+        let displayName = "";
+        if (settings.theme && settings.theme.startsWith('custom_')) {
+            const idx = parseInt(settings.theme.split('_')[1]);
+            const themes = loadCustomThemes();
+            if (themes[idx]) {
+                displayName = `🎨 ${themes[idx].name}`;
+            } else {
+                displayName = "🎨 Пользовательская";
+            }
+        } else {
+            const themes = {
+                blue: "🔵 Синяя",
+                graphite: "⚪ Графитовая",
+                black: "⚫ Чёрная",
+                "light-blue": "☀️ Светло-синяя",
+                "light-gray": "🌤️ Светло-серая",
+                cream: "🧈 Кремовая",
+                emerald: "🟢 Изумрудная",
+                neon: "💜 Неоновая"
+            };
+            displayName = themes[settings.theme] || "🔵 Синяя";
+        }
+        preview.textContent = displayName;
     }
+
+    // Подсветка стандартных кнопок
     document.querySelectorAll(".themeBtn").forEach(btn => {
-        btn.classList.toggle("active", btn.dataset.theme === pendingTheme);
+        btn.classList.toggle("active", btn.dataset.theme === settings.theme);
+    });
+
+    // Список пользовательских тем
+    renderCustomThemesList();
+
+    // Подсветка активной пользовательской темы в списке
+    document.querySelectorAll(".customThemeItem").forEach(item => {
+        // Уже обработано в renderCustomThemesList через класс active
     });
 }
 
@@ -2144,11 +2417,6 @@ function setTheme(theme) {
     updateSettingsUI();
     playSound('click');
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    // уже есть инициализация
-    updateSettingsUI();
-});
 
 /* ==========================================================
    TOAST
@@ -2183,4 +2451,3 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, true);
 });
-

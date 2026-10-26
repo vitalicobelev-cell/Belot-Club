@@ -91,6 +91,111 @@ if (savedTheme && savedTheme !== settings.theme) {
     applyTheme(settings.theme);
 }
 
+
+
+/* ==========================================================
+   CARD GAME ENGINE (Бот + Онлайн)
+========================================================== */
+
+const SUITS = ["♠", "♥", "♦", "♣"];
+const SUIT_NAMES = { "♠": "Пики", "♥": "Черви", "♦": "Бубны", "♣": "Трефы" };
+const RANKS = ["9", "J", "Q", "K", "10", "A"]; // порядок силы в козыре другой, но пока базовый
+const RANK_VALUES = { "9": 0, "J": 2, "Q": 3, "K": 4, "10": 10, "A": 11 }; // очки за карты
+
+// Создание полной колоды 32 карты
+function createDeck() {
+    const deck = [];
+    for (const suit of SUITS) {
+        for (const rank of RANKS) {
+            deck.push({
+                id: `${rank}${suit}`,
+                rank,
+                suit,
+                points: RANK_VALUES[rank],
+                isTrump: false
+            });
+        }
+    }
+    return deck;
+}
+
+// Перемешивание (Fisher-Yates)
+function shuffleDeck(deck) {
+    const arr = [...deck];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+// Состояние карточной игры
+const cardGame = {
+    mode: null,           // 3 или 4
+    isBotGame: true,
+    difficulty: "medium", // easy / medium / hard
+    players: [],          // [{id, name, isBot, hand: [], tricks: [], score: 0, bolts: 0}]
+    deck: [],
+    trumpSuit: null,
+    trumpCard: null,      // карта, которая лежала открытой
+    dealerIndex: 0,
+    activePlayerIndex: null, // кто взял игру
+    phase: "idle",        // idle | dealing | bidding | playing | scoring
+    biddingRound: 1,      // 1 или 2
+    currentBidder: 0,
+    bids: [],             // кто что сказал
+    tableCards: [],       // карты на столе в текущей взятке
+    currentTrick: [],
+    trickLeader: 0,
+    announcementsAllowed: true, // до 2-й взятки
+    tricksPlayed: 0
+};
+
+// Раздача по правилам: 3 → 2 → (торговля) → 3
+function dealCards() {
+    cardGame.deck = shuffleDeck(createDeck());
+    const numPlayers = cardGame.mode;
+
+    // Очищаем руки
+    cardGame.players.forEach(p => p.hand = []);
+
+    let deckIndex = 0;
+
+    // 1. По 3 карты
+    for (let r = 0; r < 3; r++) {
+        for (let p = 0; p < numPlayers; p++) {
+            const playerIndex = (cardGame.dealerIndex + 1 + p) % numPlayers; // раздача начинается после раздающего
+            cardGame.players[playerIndex].hand.push(cardGame.deck[deckIndex++]);
+        }
+    }
+
+    // 2. По 2 карты
+    for (let r = 0; r < 2; r++) {
+        for (let p = 0; p < numPlayers; p++) {
+            const playerIndex = (cardGame.dealerIndex + 1 + p) % numPlayers;
+            cardGame.players[playerIndex].hand.push(cardGame.deck[deckIndex++]);
+        }
+    }
+
+    // Открытая карта (потенциальный козырь)
+    cardGame.trumpCard = cardGame.deck[deckIndex++];
+
+    // Оставшиеся карты пока остаются в колоде (раздадим после торговли)
+    cardGame.remainingDeck = cardGame.deck.slice(deckIndex);
+
+    // Сортируем руки игрока для удобства (пока просто)
+    cardGame.players.forEach(p => {
+        p.hand.sort((a, b) => {
+            if (a.suit !== b.suit) return SUITS.indexOf(a.suit) - SUITS.indexOf(b.suit);
+            return RANKS.indexOf(a.rank) - RANKS.indexOf(b.rank);
+        });
+    });
+
+    cardGame.phase = "bidding";
+    cardGame.biddingRound = 1;
+    cardGame.currentBidder = (cardGame.dealerIndex + 1) % numPlayers; // первый говорит следующий после раздающего
+    cardGame.bids = [];
+}
 /* ==========================================================
    ПОЛЬЗОВАТЕЛЬСКИЕ ТЕМЫ
 ========================================================== */
